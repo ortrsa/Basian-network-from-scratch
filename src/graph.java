@@ -32,12 +32,13 @@ public class graph {
 
                 variable var = g.get(tempLine.substring(4));
                 var.setVal(Line.next().toString().substring(8).split(","));
+
                 String tempPar = Line.next().toString().substring(9);
                 if (!tempPar.equals("none")) {
                     String[] parents = tempPar.split(",");
                     var.NewParList(parents);
                     for (int i = 0; i < parents.length; i++) {
-                        var.setParents(parents, g.get(parents[i]), i);
+                        var.setParents( g.get(parents[i]), i);
                     }
 
                 } else if (tempPar.equals("none")) {
@@ -72,9 +73,12 @@ public class graph {
                     }
 
 
+
                     CptString = Line.next().toString();
 
                 }
+               // System.out.println(var);
+                var.addLastProb();
                 System.out.println(g);
 
             }

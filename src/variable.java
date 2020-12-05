@@ -33,7 +33,7 @@ public class variable {
         this.Parents = new variable[Parents.length];
     }
 
-    public void setParents(String[] Parents, variable par, int i) {
+    public void setParents(variable par, int i) {
 
         this.Parents[i] = par;
 
@@ -48,6 +48,11 @@ public class variable {
 
             CPT.add(parList, Cpt, dCptV);
         }
+    }
+
+    public void addLastProb() {
+        String lastVal = Values[Values.length-1];
+        CPT.LastProb(lastVal);
     }
 
     @Override
