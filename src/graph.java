@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class graph {
 
     private HashMap<String, variable> g;
-    private String Algo ="";
+
 
 
     public graph(String File) {
@@ -61,7 +61,8 @@ public class graph {
                     for (int i = 0; i < tempCPTList.length-1; i++) {
                         //System.out.println(Arrays.toString(tempCPTList));
                         while (!tempCPTList[i].contains("=")) {
-                            sum += tempCPTList[i] +",";
+                            sum += var.getParents()[i].getName()+ "="+tempCPTList[i] ;
+                            if(!tempCPTList[i+1].contains("=")){sum += ",";}
                             i++;
                         }
 
@@ -89,7 +90,7 @@ public class graph {
 
                while (Line.hasNext()){
                    String QuerTemp = Line.next().toString().substring(2);
-                   Queries q = new Queries(QuerTemp);
+                   Queries q = new Queries(QuerTemp, g);
 
                }
             }
@@ -120,4 +121,7 @@ public class graph {
         return TextFromFile;
     }
 
+    public HashMap<String, variable> getG() {
+        return g;
+    }
 }

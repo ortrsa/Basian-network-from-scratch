@@ -18,6 +18,9 @@ public class variable {
     public String getName() {
         return Name;
     }
+    public variable[] getParents(){
+        return this.Parents;
+    }
 
     public void setName(String name) {
         Name = name;
@@ -48,6 +51,10 @@ public class variable {
 
             CPT.add(parList, Cpt, dCptV);
         }
+    }
+
+    public HashMap<String, HashMap<String, Double>> getCPT() {
+        return this.CPT.getCpt();
     }
 
     public void addLastProb() {
