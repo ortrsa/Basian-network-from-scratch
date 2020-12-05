@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 public class graph {
 
     private HashMap<String, variable> g;
+    private String Algo ="";
 
 
     public graph(String File) {
@@ -77,7 +78,7 @@ public class graph {
                     CptString = Line.next().toString();
 
                 }
-               // System.out.println(var);
+
                 var.addLastProb();
                 System.out.println(g);
 
@@ -85,7 +86,16 @@ public class graph {
 
             if (tempLine.equals("Queries")) {
 
+
+               while (Line.hasNext()){
+                   String QuerTemp = Line.next().toString().substring(2);
+                   Queries q = new Queries(QuerTemp);
+
+               }
             }
+
+
+
         }
 
     }
