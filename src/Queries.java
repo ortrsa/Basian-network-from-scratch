@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public class Queries {
     public double Algo1() {
         double gft = getFromTable();
         variable[] v_arr = new variable[g.size()];
-        String[] val_arr = {"true","true","true","true","true"} ;//new String[g.size()];
+        String[] val_arr = {"true","true","false","true","false"} ;//new String[g.size()];
         String[] var_arr = new String[g.size()];
         if (gft != -1) return gft;
         int j = 0;
@@ -80,21 +81,26 @@ public class Queries {
     }
 
     public double join(variable[] var, String[] val) {
-    double sum = 0;
+    double sum = 1;
     HashMap<String ,String> VarVal = new HashMap<>();
+
+        for (int i = 0; i < var.length; i++) {
+
+            VarVal.put(var[i].getName(),val[i]);
+        }
 
         for (int i = 0; i < var.length; i++) {
             String Ssum = "";
             if(!var[i].hasParents()){
 
-                VarVal.put(var[i].getName(),val[i]);
-                sum += var[i].getCPT().get("").get(val[i]);
+
+                sum *= var[i].getCPT().get("").get(val[i]);
             }else{
                 for (variable par: var[i].getParents()) {
                 Ssum += par.getName() +"="+VarVal.get(par.getName())+ ",";
                 }
-                System.out.println(Ssum);
-            sum += var[i].getCPT().get(Ssum.substring(0,Ssum.length()-1)).get(val[i]);
+
+            sum *= var[i].getCPT().get(Ssum.substring(0,Ssum.length()-1)).get(val[i]);
             }
         }
 
