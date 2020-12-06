@@ -81,17 +81,18 @@ public class graph {
                 }
 
                 var.addLastProb();
-                System.out.println(g);
+               // System.out.println(g);
 
             }
 
             if (tempLine.equals("Queries")) {
+                //System.out.println(g.get("C").hasParents());
 
 
                while (Line.hasNext()){
                    String QuerTemp = Line.next().toString().substring(2);
                    Queries q = new Queries(QuerTemp, g);
-
+                    //System.out.println(q.getFromTable());
                }
             }
 
@@ -123,5 +124,9 @@ public class graph {
 
     public HashMap<String, variable> getG() {
         return g;
+    }
+
+    public Collection<variable> getV(){
+        return g.values();
     }
 }

@@ -42,6 +42,11 @@ public class variable {
 
     }
 
+    public boolean hasParents(){
+        if(this.Parents.length!=0)return true;
+        else return false;
+    }
+
     public void setCPT(String parList, String Cpt, String CptV) {
         //System.out.println(CptV);
         double dCptV = Double.parseDouble(CptV);
@@ -62,6 +67,11 @@ public class variable {
         CPT.LastProb(lastVal);
     }
 
+    public double getFullProb(){
+
+        return 0;
+    }
+
     @Override
     public String toString() {
         String ParList = "";
@@ -75,7 +85,7 @@ public class variable {
         return "variable{" +
                 "Name='" + Name + '\'' +
                 ", Values=" + Arrays.toString(Values) +
-                ", Parents=" + Arrays.toString(Parents) +
+                ", Parents=" + Parents +
                 ", Cpt=" + CPT +
                 '}';
     }
