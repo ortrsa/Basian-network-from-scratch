@@ -103,7 +103,9 @@ public class Queries {
             sum *= var[i].getCPT().get(Ssum.substring(0,Ssum.length()-1)).get(val[i]);
             }
         }
-
+        //sum = Double.parseDouble(new DecimalFormat("#.#####").format(sum));
+//        int temp = (int)(sum * 100000);
+//        sum = (double) temp/100000;
         return sum;
     }
 
