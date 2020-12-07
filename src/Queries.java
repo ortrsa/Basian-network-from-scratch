@@ -69,46 +69,13 @@ public class Queries {
         j++;
         }
 
-        ArrayList<String> val = new ArrayList<>();
-        List<ArrayList<String>> tm = new ArrayList<>();
-       // List<ArrayList<String>> t = new ArrayList<>();
-
-
-        for (int i = 0; i < val_arr.length; i++) {
-           if(val_arr[i]!=null)
-            val.add(val_arr[i]);
-        }
-        tm.add(val);
-
-        Iterator<String> it1 = hidden.keySet().iterator();
-        while (it1.hasNext()){
-            variable var = g.getG().get(it1.next());
-            for (String op:var.getValues()) {
-                for (ArrayList valOp: tm) {
-
-                    //ArrayList<String> tm1 = (ArrayList<String>)  valOp.clone();
-//                    valOp.add(op);
-//                    tm.add(new ArrayList<>());
-                //System.out.println(tm);
-                //System.out.println(var +"  t "+op);
-
-
-                }
-            }
-
-
-        }
 
 
 
 
 //        System.out.println(tm);
-        System.out.println(Arrays.toString(val_arr));
-        System.out.println(hidden);
-
-
-
-
+//        System.out.println(Arrays.toString(val_arr));
+//        System.out.println(hidden);
         //System.out.println(join(v_arr,val_arr));
 
 
@@ -166,6 +133,43 @@ public class Queries {
         }
         return query.getCPT().get(evidence).get(queryVal);
 
+    }
+
+    public void fullprob(String[] val_arr ,HashMap<String, variable> hidden ){
+
+        ArrayList<String> val = new ArrayList<>();
+        List<ArrayList<String>> tm = new ArrayList<>();
+        // List<ArrayList<String>> t = new ArrayList<>();
+
+
+        for (int i = 0; i < val_arr.length; i++) {
+            if(val_arr[i]!=null)
+                val.add(val_arr[i]);
+        }
+        tm.add(val);
+
+        Iterator<String> it1 = hidden.keySet().iterator();
+        while (it1.hasNext()){
+            variable var = g.getG().get(it1.next());
+            for (String op:var.getValues()) {
+                for (ArrayList valOp: tm) {
+                    valOp.add(op);
+
+                    System.out.println(tm);
+                    System.out.println(var + " " + op);
+                    //ArrayList<String> tm1 = (ArrayList<String>)  valOp.clone();
+//                    valOp.add(op);
+//                    tm.add(new ArrayList<>());
+                    //System.out.println(tm);
+                    //System.out.println(var +"  t "+op);
+
+
+                }
+
+            }
+
+
+        }
     }
 
     public String EviToString(variable[] v , String[] val){
