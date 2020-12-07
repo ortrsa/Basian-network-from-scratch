@@ -31,6 +31,10 @@ public class variable {
         this.Values = Values;
     }
 
+    public String[] getValues() {
+        return Values;
+    }
+
     public void NewParList(String[] Parents) {
 
         this.Parents = new variable[Parents.length];
@@ -82,12 +86,12 @@ public class variable {
 //            for (int i = 0; i < Parents.length ; i++) {
 //               ParList += "[" +g.get(Parents[i].Name + "]");
 //            }
-        return "variable{" +
-                "Name='" + Name + '\'' +
-                ", Values=" + Arrays.toString(Values) +
-                ", Parents=" + Parents +
-                ", Cpt=" + CPT +
-                '}';
+        return "variable(" +
+                 Name  +
+//                ", Values=" + Values.length +
+//                ", Parents=" + Parents.length +
+//                ", Cpt=" + //CPT +
+                ')';
     }
 
 }

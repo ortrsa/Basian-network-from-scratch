@@ -91,7 +91,7 @@ public class graph {
 
                while (Line.hasNext()){
                    String QuerTemp = Line.next().toString().substring(2);
-                   Queries q = new Queries(QuerTemp, g);
+                   Queries q = new Queries(QuerTemp, this);
                     //System.out.println(q.getFromTable());
                }
             }
@@ -120,6 +120,16 @@ public class graph {
             e.printStackTrace();
         }
         return TextFromFile;
+    }
+    public HashMap<String, variable> copy() {
+        HashMap<String, variable> copy = new HashMap<>();
+        Iterator<String> it = g.keySet().iterator();
+        while (it.hasNext()){
+            String varName  = it.next();
+            copy.put(varName, g.get(varName));
+
+        }
+        return copy;
     }
 
     public HashMap<String, variable> getG() {
