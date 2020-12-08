@@ -51,8 +51,8 @@ public class CPT {
             while (val.hasNext()) {
                 prob = prob - val.next();
             }
-            DecimalFormat dec = new DecimalFormat("#.#####");
-            prob = Double.parseDouble(dec.format(prob));
+//            DecimalFormat dec = new DecimalFormat("#.#####");
+//            prob = Double.parseDouble(dec.format(prob));
 
             ParString.put(lastVal , prob);
         }

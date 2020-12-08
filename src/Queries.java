@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -7,6 +8,9 @@ public class Queries {
     private String queryVal;
     private String[] evilist;
     private graph g;
+    private double Answer;
+    private  int sumOfAdd = 0;
+    private  int sumOfMul = 0;
 
     public Queries(String Quer, graph g) {
         this.g = g;
@@ -17,6 +21,7 @@ public class Queries {
         this.queryVal = Qtemp[0].substring(2);
         this.evilist = Qtemp[1].split(",");
         UseAlgo(algo);
+        System.out.println(Answer);
 //        System.out.println(Arrays.toString(evilist));
 //        System.out.println(query.getName() + " " + queryVal);
 
@@ -47,65 +52,109 @@ public class Queries {
 
     public double Algo1() {
         double gft = getFromTable();
-        if (gft != -1) return gft;
+        if (gft != -1){
+            Answer = gft;
+            return gft;}
         HashMap<String, variable> hidden = RemoveQueryFromHidden(g.copy());
-        variable[] v_arr = new variable[evilist.length+1 +hidden.size()];
-        String[] val_arr = new String[evilist.length+1+ hidden.size()];
-
+        variable[] v_arr = new variable[evilist.length + 1 + hidden.size()];
+        String[] val_arr = new String[evilist.length + 1 + hidden.size()];
         int j = 0;
+        double norm =0.0;
+        double ans = 0.0;
 
         v_arr[j] = query;
-        val_arr[j] = queryVal;
         j++;
-        for (String evi:evilist) {
-            v_arr[j] = g.getG().get(evi.substring(0,1));
+        for (String evi : evilist) {
+            v_arr[j] = g.getG().get(evi.substring(0, 1));
             val_arr[j] = evi.substring(2);
             j++;
         }
 
-        Iterator<String> it = hidden.keySet().iterator();
-        while (it.hasNext()){
-        v_arr[j]= g.getG().get(it.next());
-        j++;
+
+        for (int i = 0; i < query.getValues().length; i++) {
+            val_arr[0]= query.getValues()[i];
+            double temp = jointProb(j,hidden,v_arr,val_arr);
+           if(val_arr[0].equals(queryVal)){
+
+                ans = temp;
+           }else {
+             norm += temp;
+                 sumOfAdd++;
+
+
+           }
+
         }
 
+        Answer = ans/(norm+ans);
+        System.out.println(Answer);
+        System.out.println("add " +sumOfAdd);
+        System.out.println("mul "+ sumOfMul);
+        return ans/(norm+ans);
+    }
 
+    public double jointProb(int j,HashMap<String, variable> hidden ,variable[] v_arr,String[] val_arr){
+        int i = j;
+        //this method put all the hidden variable in v_var list and all its values as lists in valop list.
+        List<List<String>> valop = new ArrayList<>();
+        Iterator<String> it = hidden.keySet().iterator();
+        while (it.hasNext()) {
+            List<String> valArr = new ArrayList<>();
+            v_arr[j] = g.getG().get(it.next());
+            valArr.addAll(Arrays.asList(v_arr[j].getValues()));
+            valop.add(valArr);
+            j++;
+        }
+        List<String> re = new LinkedList<>();
+        generatePermutations(valop, re, 0, "");
 
+        double ans = 0.0;
+        for (int t = 0; t < re.size(); t++) {
+            for (int k = i; k < val_arr.length; k++) {
+                int tt =0;
+                String[] temp = re.get(t).substring(1).split(",");
+                while (tt<temp.length) {
+                    val_arr[k] =temp[tt];
+                    tt++;
+                    k++;
+                }
+                if (ans !=0) {
+                    sumOfAdd++;
+                }
+                ans += join(v_arr,val_arr);
 
+            }
+        }
+        return ans;
 
-//        System.out.println(tm);
-//        System.out.println(Arrays.toString(val_arr));
-//        System.out.println(hidden);
-        //System.out.println(join(v_arr,val_arr));
-
-
-        return 0;
     }
 
     public double join(variable[] var, String[] val) {
-    double sum = 1;
-    HashMap<String ,String> VarVal = new HashMap<>();
+        double sum = 1;
+        HashMap<String, String> VarVal = new HashMap<>();
 
         for (int i = 0; i < var.length; i++) {
 
-            VarVal.put(var[i].getName(),val[i]);
+            VarVal.put(var[i].getName(), val[i]);
         }
 
         for (int i = 0; i < var.length; i++) {
             String Ssum = "";
-            if(!var[i].hasParents()){
+            if (!var[i].hasParents()) {
 
 
                 sum *= var[i].getCPT().get("").get(val[i]);
-            }else{
-                for (variable par: var[i].getParents()) {
-                Ssum += par.getName() +"="+VarVal.get(par.getName())+ ",";
+                sumOfMul++;
+            } else {
+                for (variable par : var[i].getParents()) {
+                    Ssum += par.getName() + "=" + VarVal.get(par.getName()) + ",";
                 }
 
-            sum *= var[i].getCPT().get(Ssum.substring(0,Ssum.length()-1)).get(val[i]);
+                sum *= var[i].getCPT().get(Ssum.substring(0, Ssum.length() - 1)).get(val[i]);
+                sumOfMul++;
             }
         }
-        sum = Double.parseDouble(new DecimalFormat("#.#####").format(sum));
+
 
         return sum;
     }
@@ -135,64 +184,28 @@ public class Queries {
 
     }
 
-    public void fullprob(String[] val_arr ,HashMap<String, variable> hidden ){
-
-        ArrayList<String> val = new ArrayList<>();
-        List<ArrayList<String>> tm = new ArrayList<>();
-        // List<ArrayList<String>> t = new ArrayList<>();
 
 
-        for (int i = 0; i < val_arr.length; i++) {
-            if(val_arr[i]!=null)
-                val.add(val_arr[i]);
-        }
-        tm.add(val);
-
-        Iterator<String> it1 = hidden.keySet().iterator();
-        while (it1.hasNext()){
-            variable var = g.getG().get(it1.next());
-            for (String op:var.getValues()) {
-                for (ArrayList valOp: tm) {
-                    valOp.add(op);
-
-                    System.out.println(tm);
-                    System.out.println(var + " " + op);
-                    //ArrayList<String> tm1 = (ArrayList<String>)  valOp.clone();
-//                    valOp.add(op);
-//                    tm.add(new ArrayList<>());
-                    //System.out.println(tm);
-                    //System.out.println(var +"  t "+op);
-
-
-                }
-
-            }
-
-
-        }
-    }
-
-    public String EviToString(variable[] v , String[] val){
+    public String EviToString(variable[] v, String[] val) {
         String str = "";
         for (int i = 0; i < v.length; i++) {
-            str += v[i].getName() + "=" + val[i]+ ",";
+            str += v[i].getName() + "=" + val[i] + ",";
         }
 
-        return str.substring(0,str.length()-1);
+        return str.substring(0, str.length() - 1);
 
     }
 
-    public HashMap<String , variable> RemoveQueryFromHidden(HashMap<String, variable> hidden){
-        HashMap<String , variable> temp = g.copy();
+    public HashMap<String, variable> RemoveQueryFromHidden(HashMap<String, variable> hidden) {
+        HashMap<String, variable> temp = g.copy();
         Iterator<String> hiddenIt = temp.keySet().iterator();
-        while (hiddenIt.hasNext()){
+        while (hiddenIt.hasNext()) {
             String hiddenVar = hiddenIt.next();
-            if(hiddenVar.equals(query.getName())){
+            if (hiddenVar.equals(query.getName())) {
                 hidden.remove(hiddenVar);
-            }
-            else {
-                for (String evi:evilist) {
-                    if(hiddenVar.equals(evi.substring(0,1))){
+            } else {
+                for (String evi : evilist) {
+                    if (hiddenVar.equals(evi.substring(0, 1))) {
                         hidden.remove(hiddenVar);
 
                     }
@@ -202,5 +215,18 @@ public class Queries {
         }
         return hidden;
     }
+
+
+    void generatePermutations(List<List<String>> lists, List<String> result, int depth, String current) {
+        if (depth == lists.size()) {
+            result.add(current);
+            return;
+        }
+
+        for (int i = 0; i < lists.get(depth).size(); i++) {
+            generatePermutations(lists, result, depth + 1, current + ","+lists.get(depth).get(i));
+        }
+    }
+
 
 }
