@@ -9,8 +9,8 @@ public class Queries {
     private String[] evilist;
     private graph g;
     private double Answer;
-    private  int sumOfAdd = 0;
-    private  int sumOfMul = 0;
+    private int sumOfAdd = 0;
+    private int sumOfMul = 0;
 
     public Queries(String Quer, graph g) {
         this.g = g;
@@ -22,7 +22,6 @@ public class Queries {
         this.evilist = Qtemp[1].split(",");
         UseAlgo(algo);
         System.out.println(Answer);
-
 
 
     }
@@ -39,20 +38,25 @@ public class Queries {
 
     private double Algo3() {
         double gft = getFromTable();
-        if (gft != -1){
+        if (gft != -1) {
             Answer = gft;
-            return gft;}
+            return gft;
+        }
         return 1;
 
     }
 
     private double Algo2() {
         double gft = getFromTable();
-        if (gft != -1){
+        if (gft != -1) {
             Answer = gft;
-            return gft;}
-            System.out.println(query.isAncestor(g.getG().get("Q")));
-            System.out.println("1212323131212323"+query.getAncestor());
+            return gft;
+        }
+        HashMap<String, variable> hidden = RemoveQueryFromHidden(g.copy());
+        BetterRemoveFromHidden(hidden);
+        System.out.println(hidden);
+        System.out.println(query.isAncestor(g.getG().get("Q")));
+        System.out.println("1212323131212323" + query.getAncestor());
         //MakeFactorsFromCpt(query.getCPT(),evilist);
 
 
@@ -62,14 +66,15 @@ public class Queries {
 
     public double Algo1() {
         double gft = getFromTable();
-        if (gft != -1){
+        if (gft != -1) {
             Answer = gft;
-            return gft;}
+            return gft;
+        }
         HashMap<String, variable> hidden = RemoveQueryFromHidden(g.copy());
         variable[] v_arr = new variable[evilist.length + 1 + hidden.size()];
         String[] val_arr = new String[evilist.length + 1 + hidden.size()];
         int j = 0;
-        double norm =0.0;
+        double norm = 0.0;
         double ans = 0.0;
 
         v_arr[j] = query;
@@ -82,28 +87,28 @@ public class Queries {
 
 
         for (int i = 0; i < query.getValues().length; i++) {
-            val_arr[0]= query.getValues()[i];
-            double temp = jointProb(j,hidden,v_arr,val_arr);
-           if(val_arr[0].equals(queryVal)){
+            val_arr[0] = query.getValues()[i];
+            double temp = jointProb(j, hidden, v_arr, val_arr);
+            if (val_arr[0].equals(queryVal)) {
 
                 ans = temp;
-           }else {
-             norm += temp;
-                 sumOfAdd++;
+            } else {
+                norm += temp;
+                sumOfAdd++;
 
 
-           }
+            }
 
         }
 
-        Answer = ans/(norm+ans);
+        Answer = ans / (norm + ans);
         System.out.println(Answer);
-        System.out.println("add " +sumOfAdd);
-        System.out.println("mul "+ sumOfMul);
-        return ans/(norm+ans);
+        System.out.println("add " + sumOfAdd);
+        System.out.println("mul " + sumOfMul);
+        return ans / (norm + ans);
     }
 
-    public double jointProb(int j,HashMap<String, variable> hidden ,variable[] v_arr,String[] val_arr){
+    public double jointProb(int j, HashMap<String, variable> hidden, variable[] v_arr, String[] val_arr) {
         int i = j;
         //this method put all the hidden variable in v_var list and all its values as lists in valop list.
         List<List<String>> valop = new ArrayList<>();
@@ -121,17 +126,17 @@ public class Queries {
         double ans = 0.0;
         for (int t = 0; t < re.size(); t++) {
             for (int k = i; k < val_arr.length; k++) {
-                int tt =0;
+                int tt = 0;
                 String[] temp = re.get(t).substring(1).split(",");
-                while (tt<temp.length) {
-                    val_arr[k] =temp[tt];
+                while (tt < temp.length) {
+                    val_arr[k] = temp[tt];
                     tt++;
                     k++;
                 }
-                if (ans !=0) {
+                if (ans != 0) {
                     sumOfAdd++;
                 }
-                ans += join(v_arr,val_arr);
+                ans += join(v_arr, val_arr);
 
             }
         }
@@ -155,18 +160,20 @@ public class Queries {
 
 
                 sum *= var[i].getCPT().getCpt().get("").get(val[i]);
-                if (flag){
-                sumOfMul++;}
-                flag =true;
+                if (flag) {
+                    sumOfMul++;
+                }
+                flag = true;
             } else {
                 for (variable par : var[i].getParents()) {
                     Ssum += par.getName() + "=" + VarVal.get(par.getName()) + ",";
                 }
 
                 sum *= var[i].getCPT().getCpt().get(Ssum.substring(0, Ssum.length() - 1)).get(val[i]);
-                if (flag){
-                    sumOfMul++;}
-                flag =true;
+                if (flag) {
+                    sumOfMul++;
+                }
+                flag = true;
             }
         }
 
@@ -174,7 +181,7 @@ public class Queries {
         return sum;
     }
 
-    public CPT MakeFactorsFromCpt(CPT cpt , String[] evilist){
+    public CPT MakeFactorsFromCpt(CPT cpt, String[] evilist) {
         CPT factor = new CPT(cpt);
 
         return factor;
@@ -204,7 +211,6 @@ public class Queries {
         return query.getCPT().getCpt().get(evidence).get(queryVal);
 
     }
-
 
 
     public String EviToString(variable[] v, String[] val) {
@@ -237,6 +243,28 @@ public class Queries {
         return hidden;
     }
 
+    public HashMap<String, variable> BetterRemoveFromHidden(HashMap<String, variable> hidden) {
+        HashMap<String, variable> temp = g.copy();
+        Iterator<String> hiddenIt = temp.keySet().iterator();
+        while (hiddenIt.hasNext()) {
+            String hiddenVar = hiddenIt.next();
+            if (hiddenVar.equals(query.getName())) {
+                hidden.remove(hiddenVar);
+            } else if (!query.isAncestor(g.getG().get(hiddenVar))) {
+                hidden.remove(hiddenVar);
+            } else {
+                for (String evi : evilist) {
+                    if (hiddenVar.equals(evi.substring(0, 1))) {
+                        hidden.remove(hiddenVar);
+
+                    }
+                }
+
+            }
+        }
+        return hidden;
+    }
+
 
     void generatePermutations(List<List<String>> lists, List<String> result, int depth, String current) {
         if (depth == lists.size()) {
@@ -245,7 +273,7 @@ public class Queries {
         }
 
         for (int i = 0; i < lists.get(depth).size(); i++) {
-            generatePermutations(lists, result, depth + 1, current + ","+lists.get(depth).get(i));
+            generatePermutations(lists, result, depth + 1, current + "," + lists.get(depth).get(i));
         }
     }
 
