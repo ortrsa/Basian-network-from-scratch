@@ -1,5 +1,4 @@
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 public class variable {
 
@@ -8,6 +7,7 @@ public class variable {
     private String[] Values;
     private variable[] Parents;
     private CPT CPT;
+    private HashSet<variable> ancestor;
 
 
     public variable(String name) {
@@ -18,7 +18,8 @@ public class variable {
     public String getName() {
         return Name;
     }
-    public variable[] getParents(){
+
+    public variable[] getParents() {
         return this.Parents;
     }
 
@@ -46,8 +47,17 @@ public class variable {
 
     }
 
-    public boolean hasParents(){
-        if(this.Parents.length!=0)return true;
+    public HashSet<variable> getAncestor() {
+        return ancestor;
+    }
+
+    public boolean isAncestor(variable v){
+        if(ancestor==null){MakeAncestor();}
+        return ancestor.contains(v);
+    }
+
+    public boolean hasParents() {
+        if (this.Parents.length != 0) return true;
         else return false;
     }
 
@@ -67,16 +77,33 @@ public class variable {
     }
 
     public void addLastProb() {
-        String lastVal = Values[Values.length-1];
+        String lastVal = Values[Values.length - 1];
         CPT.LastProb(lastVal);
     }
 
+    public void MakeAncestor() {
+        ancestor = new HashSet<>();
+
+        Queue<variable> Q = new LinkedList<>();
+        Q.add(this);
+        while (!Q.isEmpty()) {
+            variable v = Q.poll();
+            Iterator<variable> it1 = Arrays.asList(v.getParents()).iterator();
+            while (it1.hasNext()) {
+                variable v1 = it1.next();
+                if (!ancestor.contains(v1)) {
+                    ancestor.add(v1);
+                    Q.add(v1);
+                }
+            }
+        }
+    }
 
 
     @Override
     public String toString() {
         return "variable(" +
-                 Name  +
+                Name +
 
                 ')';
     }

@@ -51,8 +51,9 @@ public class Queries {
         if (gft != -1){
             Answer = gft;
             return gft;}
-
-        MakeFactorsFromCpt(query.getCPT(),evilist);
+            System.out.println(query.isAncestor(g.getG().get("Q")));
+            System.out.println("1212323131212323"+query.getAncestor());
+        //MakeFactorsFromCpt(query.getCPT(),evilist);
 
 
         return 1;
@@ -175,10 +176,6 @@ public class Queries {
 
     public CPT MakeFactorsFromCpt(CPT cpt , String[] evilist){
         CPT factor = new CPT(cpt);
-        System.out.println("00000"+cpt);
-        System.out.println("00000"+factor);
-
-
 
         return factor;
     }
