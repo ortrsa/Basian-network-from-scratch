@@ -1,3 +1,4 @@
+import java.sql.Struct;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,10 +15,23 @@ public class CPT {
         Cpt = new HashMap<>();
         innerHM.put(val, prob);
         Cpt.put(ParV, innerHM);
-
-
     }
 
+    public CPT(CPT other) {
+
+        Cpt = new HashMap<>();
+        Iterator<String> it = other.getCpt().keySet().iterator();
+        while (it.hasNext()) {
+            HashMap<String, Double> innerHM = new HashMap<>();
+            String par = it.next();
+            Iterator<String> it1 = other.getCpt().get(par).keySet().iterator();
+            while (it1.hasNext()) {
+                String val = it1.next();
+                innerHM.put(val, other.getCpt().get(par).get(val));
+            }
+            Cpt.put(par,innerHM);
+        }
+    }
 
     public HashMap<String, HashMap<String, Double>> getCpt() {
         return Cpt;
@@ -54,11 +68,10 @@ public class CPT {
 //            DecimalFormat dec = new DecimalFormat("#.#####");
 //            prob = Double.parseDouble(dec.format(prob));
 
-            ParString.put(lastVal , prob);
+            ParString.put(lastVal, prob);
         }
 
     }
-
 
 
 }

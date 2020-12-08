@@ -62,8 +62,8 @@ public class variable {
         }
     }
 
-    public HashMap<String, HashMap<String, Double>> getCPT() {
-        return this.CPT.getCpt();
+    public CPT getCPT() {
+        return this.CPT;
     }
 
     public void addLastProb() {

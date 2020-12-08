@@ -22,8 +22,8 @@ public class Queries {
         this.evilist = Qtemp[1].split(",");
         UseAlgo(algo);
         System.out.println(Answer);
-//        System.out.println(Arrays.toString(evilist));
-//        System.out.println(query.getName() + " " + queryVal);
+
+
 
     }
 
@@ -51,7 +51,12 @@ public class Queries {
         if (gft != -1){
             Answer = gft;
             return gft;}
+
+        MakeFactorsFromCpt(query.getCPT(),evilist);
+
+
         return 1;
+
     }
 
     public double Algo1() {
@@ -148,7 +153,7 @@ public class Queries {
             if (!var[i].hasParents()) {
 
 
-                sum *= var[i].getCPT().get("").get(val[i]);
+                sum *= var[i].getCPT().getCpt().get("").get(val[i]);
                 if (flag){
                 sumOfMul++;}
                 flag =true;
@@ -157,7 +162,7 @@ public class Queries {
                     Ssum += par.getName() + "=" + VarVal.get(par.getName()) + ",";
                 }
 
-                sum *= var[i].getCPT().get(Ssum.substring(0, Ssum.length() - 1)).get(val[i]);
+                sum *= var[i].getCPT().getCpt().get(Ssum.substring(0, Ssum.length() - 1)).get(val[i]);
                 if (flag){
                     sumOfMul++;}
                 flag =true;
@@ -168,8 +173,18 @@ public class Queries {
         return sum;
     }
 
+    public CPT MakeFactorsFromCpt(CPT cpt , String[] evilist){
+        CPT factor = new CPT(cpt);
+        System.out.println("00000"+cpt);
+        System.out.println("00000"+factor);
+
+
+
+        return factor;
+    }
+
     public double getFromTable() {
-        Iterator<String> it = query.getCPT().keySet().iterator();
+        Iterator<String> it = query.getCPT().getCpt().keySet().iterator();
         boolean flag = false;
         String evidence = "";
         while (it.hasNext()) {
@@ -189,7 +204,7 @@ public class Queries {
         if (!flag) {
             return -1;
         }
-        return query.getCPT().get(evidence).get(queryVal);
+        return query.getCPT().getCpt().get(evidence).get(queryVal);
 
     }
 
