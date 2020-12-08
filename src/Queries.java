@@ -39,14 +39,18 @@ public class Queries {
 
     private double Algo3() {
         double gft = getFromTable();
-        if (gft != -1) return gft;
+        if (gft != -1){
+            Answer = gft;
+            return gft;}
         return 1;
 
     }
 
     private double Algo2() {
         double gft = getFromTable();
-        if (gft != -1) return gft;
+        if (gft != -1){
+            Answer = gft;
+            return gft;}
         return 1;
     }
 
@@ -131,27 +135,32 @@ public class Queries {
 
     public double join(variable[] var, String[] val) {
         double sum = 1;
+
         HashMap<String, String> VarVal = new HashMap<>();
 
         for (int i = 0; i < var.length; i++) {
 
             VarVal.put(var[i].getName(), val[i]);
         }
-
+        boolean flag = false;
         for (int i = 0; i < var.length; i++) {
             String Ssum = "";
             if (!var[i].hasParents()) {
 
 
                 sum *= var[i].getCPT().get("").get(val[i]);
-                sumOfMul++;
+                if (flag){
+                sumOfMul++;}
+                flag =true;
             } else {
                 for (variable par : var[i].getParents()) {
                     Ssum += par.getName() + "=" + VarVal.get(par.getName()) + ",";
                 }
 
                 sum *= var[i].getCPT().get(Ssum.substring(0, Ssum.length() - 1)).get(val[i]);
-                sumOfMul++;
+                if (flag){
+                    sumOfMul++;}
+                flag =true;
             }
         }
 
