@@ -52,7 +52,7 @@ public class variable {
     }
 
     public void setCPT(String parList, String Cpt, String CptV) {
-        //System.out.println(CptV);
+
         double dCptV = Double.parseDouble(CptV);
         if (CPT == null) {
             CPT = new CPT(parList, Cpt, dCptV);
@@ -71,26 +71,13 @@ public class variable {
         CPT.LastProb(lastVal);
     }
 
-    public double getFullProb(){
 
-        return 0;
-    }
 
     @Override
     public String toString() {
-        String ParList = "";
-//        for (variable n : Parents) {
-//            //System.out.println(n);
-//            ParList += Arrays.toString(Parents) + ",";
-//        }
-//            for (int i = 0; i < Parents.length ; i++) {
-//               ParList += "[" +g.get(Parents[i].Name + "]");
-//            }
         return "variable(" +
                  Name  +
-//                ", Values=" + Values.length +
-//                ", Parents=" + Parents.length +
-//                ", Cpt=" + //CPT +
+
                 ')';
     }
 
