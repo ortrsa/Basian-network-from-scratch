@@ -17,11 +17,11 @@ public class Queries {
         this.algo = Integer.parseInt(Quer.substring(Quer.length() - 1));
         String temp = Quer.substring(0, Quer.length() - 3);
         String[] Qtemp = temp.split("\\|");
-        this.query = g.getG().get(Qtemp[0].substring(0, 1));
-        this.queryVal = Qtemp[0].substring(2);
+        this.query = g.getG().get(Qtemp[0].substring(0,Qtemp[0].indexOf("=") ));
+        this.queryVal = Qtemp[0].substring(Qtemp[0].indexOf("=")+1);
         this.evilist = Qtemp[1].split(",");
         UseAlgo(algo);
-        //System.out.println(Answer);
+       // System.out.println(Answer);
 
 
     }
@@ -64,7 +64,7 @@ public class Queries {
 //        j++;
         for (String evi : evilist) {
             v_arr[j] = g.getG().get(evi.substring(0, 1));
-            val_arr[j] = evi.substring(2);
+            val_arr[j] = evi.substring(evi.indexOf("="));
             j++;
         }
 
@@ -103,8 +103,9 @@ public class Queries {
         v_arr[j] = query;
         j++;
         for (String evi : evilist) {
-            v_arr[j] = g.getG().get(evi.substring(0, 1));
-            val_arr[j] = evi.substring(2);
+            int index = evi.indexOf("=");
+            v_arr[j] = g.getG().get(evi.substring(0, index));
+            val_arr[j] = evi.substring(index+1);
             j++;
         }
 
@@ -123,8 +124,8 @@ public class Queries {
 
         Answer = ans / (norm + ans);
 //        System.out.println(Answer);
-//        System.out.println("add " + sumOfAdd);
-//        System.out.println("mul " + sumOfMul);
+        System.out.println("add " + sumOfAdd);
+        System.out.println("mul " + sumOfMul);
         return ans / (norm + ans);
     }
 
@@ -142,7 +143,6 @@ public class Queries {
         }
         List<String> re = new LinkedList<>();
         generatePermutations(valop, re, 0, "");
-
         double ans = 0.0;
         for (int t = 0; t < re.size(); t++) {
             for (int k = i; k < val_arr.length; k++) {
@@ -252,7 +252,7 @@ public class Queries {
                 hidden.remove(hiddenVar);
             } else {
                 for (String evi : evilist) {
-                    if (hiddenVar.equals(evi.substring(0, 1))) {
+                    if (hiddenVar.equals(evi.substring(0, evi.indexOf("=")))) {
                         hidden.remove(hiddenVar);
 
                     }
