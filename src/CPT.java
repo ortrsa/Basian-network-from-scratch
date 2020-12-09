@@ -49,6 +49,10 @@ public class CPT {
         }
     }
 
+    public Iterator<String> iterator(){
+        return getCpt().keySet().iterator();
+    }
+
     @Override
     public String toString() {
         return "" + Cpt;

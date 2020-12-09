@@ -21,7 +21,7 @@ public class Queries {
         this.queryVal = Qtemp[0].substring(2);
         this.evilist = Qtemp[1].split(",");
         UseAlgo(algo);
-        System.out.println(Answer);
+        //System.out.println(Answer);
 
 
     }
@@ -54,9 +54,32 @@ public class Queries {
         }
         HashMap<String, variable> hidden = RemoveQueryFromHidden(g.copy());
         BetterRemoveFromHidden(hidden);
-        System.out.println(hidden);
-        System.out.println(query.isAncestor(g.getG().get("Q")));
-        System.out.println("1212323131212323" + query.getAncestor());
+        variable[] v_arr = new variable[evilist.length ];
+        String[] val_arr = new String[evilist.length ];
+        int j = 0;
+
+
+//        v_arr[j] = query;
+//        val_arr[j] =queryVal;
+//        j++;
+        for (String evi : evilist) {
+            v_arr[j] = g.getG().get(evi.substring(0, 1));
+            val_arr[j] = evi.substring(2);
+            j++;
+        }
+
+        for (variable v: g.getV()) {
+            System.out.println((new Factor().CPTtoFactor(v,v.getCPT())));
+        }
+        System.out.println();
+
+       // System.out.println(Arrays.toString(v_arr));
+        //System.out.println(new Factor(g.getG().get("A"),v_arr,val_arr));
+
+
+//        System.out.println(hidden);
+//        System.out.println(query.isAncestor(g.getG().get("Q")));
+//        System.out.println("1212323131212323" + query.getAncestor());
         //MakeFactorsFromCpt(query.getCPT(),evilist);
 
 
@@ -90,21 +113,18 @@ public class Queries {
             val_arr[0] = query.getValues()[i];
             double temp = jointProb(j, hidden, v_arr, val_arr);
             if (val_arr[0].equals(queryVal)) {
-
                 ans = temp;
             } else {
                 norm += temp;
                 sumOfAdd++;
-
-
             }
 
         }
 
         Answer = ans / (norm + ans);
-        System.out.println(Answer);
-        System.out.println("add " + sumOfAdd);
-        System.out.println("mul " + sumOfMul);
+//        System.out.println(Answer);
+//        System.out.println("add " + sumOfAdd);
+//        System.out.println("mul " + sumOfMul);
         return ans / (norm + ans);
     }
 
