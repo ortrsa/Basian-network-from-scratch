@@ -56,7 +56,7 @@ public class Factor {
         for (int i = 0; i <toRemove.length ; i++) {
             factor.remove(toRemove[i]);
         }
-
+System.out.println(factor);
     }
 
     public void CPTtoFactor(variable v, CPT cpt) {

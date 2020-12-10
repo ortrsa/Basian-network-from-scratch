@@ -1,5 +1,3 @@
-import java.lang.reflect.Array;
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class Queries {
@@ -7,7 +5,7 @@ public class Queries {
     private variable query;
     private String queryVal;
     private String[] evilist;
-    private PriorityQueue<Factor> factorQ = new PriorityQueue<>(new Algo2Comparator());
+    private PriorityQueue<Factor> factorQAlgo2 = new PriorityQueue<>(new Algo2Comparator());
     private graph g;
     private double Answer;
     private int sumOfAdd = 0;
@@ -70,14 +68,28 @@ public class Queries {
 
         for (variable v: g.getV()) {
           Factor f = new Factor(v, evilist);
-            if (!f.hasOneVal()){factorQ.add(f);}
+            if (!f.hasOneVal()){
+                factorQAlgo2.add(f);}
         }
-        while (!factorQ.isEmpty()){
-            System.out.println(factorQ.poll());
+        while (!factorQAlgo2.isEmpty()){
+            if(factorQAlgo2.size()>1) {
+
+                 joinFactors(factorQAlgo2.poll() ,factorQAlgo2.poll() );
+            }
+            else {
+                Eliminate(factorQAlgo2.poll());
+            }
+       //System.out.println(factorQAlgo2.poll());
         }
+        System.out.println();
 
 
         return 1;
+
+    }
+
+    private void Eliminate(Factor poll) {
+
 
     }
 
@@ -118,8 +130,8 @@ public class Queries {
 
         Answer = ans / (norm + ans);
 //        System.out.println(Answer);
-        System.out.println("add " + sumOfAdd);
-        System.out.println("mul " + sumOfMul);
+//        System.out.println("add " + sumOfAdd);
+//        System.out.println("mul " + sumOfMul);
         return ans / (norm + ans);
     }
 
@@ -279,8 +291,57 @@ public class Queries {
         return hidden;
     }
 
+    private void joinFactors(Factor F1 , Factor F2){
+    Factor F3 = new Factor();
+    System.out.println("f1 : ----"+F1);
+    System.out.println("f2 : ----"+F2);
+        F3.setFactorName(mergeFactorName(F1,F2));
+        System.out.println(F3.getFactorName());
+        ArrayList<String> CommonVals = new ArrayList<>();
+        ArrayList<String> NonCommonVals = new ArrayList<>();
+        Iterator<String> It1 = F1.valIterator();
+        while (It1.hasNext()){
+            String thisVal = It1.next();
+            String[] valArr= thisVal.split(",");
+            for (int i = 0; i < valArr.length; i++) {
+                if (F3.getFactorName().contains(valArr[i].substring(0,valArr[i].indexOf("=")))){
+                    CommonVals.add(valArr[i]);
+                }
+                else{
+                    NonCommonVals.add(valArr[i]);
+                }
+            }
+            Iterator<String> It2 = F2.valIterator();
+            while (It2.hasNext()){
+                String otherVal = It2.next();
+                boolean containsAll = true;
+                for (String commonVal: CommonVals) {
+                    if(!otherVal.contains(commonVal)){containsAll= false;}
+                }
+                if(containsAll){
+                    System.out.println(thisVal +"  " +otherVal +" =" + F1.getProb(thisVal) * F2.getProb(otherVal) );
+                    F3.addLine( otherVal, F1.getProb(thisVal) * F2.getProb(otherVal));
+                }
 
-    void generatePermutations(List<List<String>> lists, List<String> result, int depth, String current) {
+            }
+        }
+    System.out.println("       "+F3);
+    }
+
+    private ArrayList<String> mergeFactorName(Factor F1 , Factor F2){
+       ArrayList<String> ans = new ArrayList<>();
+       ans.addAll(F1.getFactorName());
+        ArrayList<String> nameF2 = F2.getFactorName();
+        for (String name: nameF2) {
+            if(!ans.contains(name)){ans.add(name);}
+        }
+        return ans;
+    }
+
+
+
+/////////////change this method***********************************
+   private void generatePermutations(List<List<String>> lists, List<String> result, int depth, String current) {
         if (depth == lists.size()) {
             result.add(current);
             return;
