@@ -43,14 +43,20 @@ public class Factor {
                  toRemove[j]=thisVal;
               j++;
              }
-             else if(thisVal.contains(Evi[i])){
-                 thisVal.replace(Evi[i],"");
+             else if(thisVal.contains(Evi[i])){ // dont applay on HM (cant change HM key!!! *****)
+                 if(thisVal.contains(","+Evi[i]+",")){thisVal =  thisVal.replace(Evi[i]+",","");}
+                 else if(thisVal.contains(Evi[i]+",")){thisVal =  thisVal.replace(Evi[i]+",","");}
+                 else if (thisVal.contains(","+Evi[i])){thisVal =  thisVal.replace(","+Evi[i],"");}
+
+                 //System.out.println(thisVal);
+
              }
             }
         }
         for (int i = 0; i <toRemove.length ; i++) {
             factor.remove(toRemove[i]);
         }
+
     }
 
     public void CPTtoFactor(variable v, CPT cpt) {
@@ -99,6 +105,27 @@ public int getAsciiVal(){
     }
         return sum;
 }
+
+    public Iterator<String> valIterator(){
+        return factor.keySet().iterator();
+    }
+
+    public ArrayList<String> getFactorName() {
+        return factorName;
+    }
+
+    public void setFactorName(ArrayList<String> factorName) {
+        this.factorName = factorName;
+    }
+    public double getProb(String val){
+        return factor.get(val);
+    }
+
+    public void addLine(String str, double prob) {
+        factor.put(str,prob);
+
+    }
+
     @Override
     public String toString() {
         return "Factor{" +
