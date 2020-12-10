@@ -7,6 +7,7 @@ public class Queries {
     private variable query;
     private String queryVal;
     private String[] evilist;
+    private PriorityQueue<Factor> factorQ = new PriorityQueue<>(new Algo2Comparator());
     private graph g;
     private double Answer;
     private int sumOfAdd = 0;
@@ -15,6 +16,7 @@ public class Queries {
     public Queries(String Quer, graph g) {
         this.g = g;
         this.algo = Integer.parseInt(Quer.substring(Quer.length() - 1));
+
         String temp = Quer.substring(0, Quer.length() - 3);
         String[] Qtemp = temp.split("\\|");
         this.query = g.getG().get(Qtemp[0].substring(0,Qtemp[0].indexOf("=") ));
@@ -68,9 +70,11 @@ public class Queries {
 
         for (variable v: g.getV()) {
           Factor f = new Factor(v, evilist);
-            System.out.println(f);
+            if (!f.hasOneVal()){factorQ.add(f);}
         }
-        System.out.println();
+        while (!factorQ.isEmpty()){
+            System.out.println(factorQ.poll());
+        }
 
 
         return 1;

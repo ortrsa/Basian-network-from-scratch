@@ -85,6 +85,20 @@ public class Factor {
 
     }
 
+public boolean hasOneVal(){
+        return factor.size()<=1;
+}
+public int getAsciiVal(){
+   int sum = 0;
+    for (String name: factorName ) {
+
+        for (char c: name.toCharArray()) {
+           sum+=c;
+        }
+
+    }
+        return sum;
+}
     @Override
     public String toString() {
         return "Factor{" +
