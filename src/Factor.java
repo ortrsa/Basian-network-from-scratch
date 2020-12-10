@@ -2,16 +2,20 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 public class Factor {
-    private ArrayList<String> names;
+    private ArrayList<String> factorName;
     private HashMap<String, Double> factor;
 
 
     public Factor() {
         factor = new HashMap<>();
-        names = new ArrayList<>();
+        factorName = new ArrayList<>();
     }
 
-    public Factor(variable var ) {
+    public Factor(variable var , String[] Evi ) {
+        factor = new HashMap<>();
+        factorName = new ArrayList<>();
+        CPTtoFactor(var, var.getCPT());
+        RemoveEvidenceFromFactor(Evi);
 
     }
 
@@ -24,11 +28,36 @@ public class Factor {
         return i;
     }
 
-    public Factor CPTtoFactor(variable v, CPT cpt) {
-        Factor factor = new Factor();
+    private void RemoveEvidenceFromFactor(String[] Evi){
+        String[] toRemove = new String[this.factor.size()];
+        for (int i = 0; i < Evi.length ; i++) {
+            int index = Evi[i].indexOf("=");
+            String v_arr = Evi[i].substring(0, index);
+            String val_arr = Evi[i].substring(index+1);
+            factorName.remove(v_arr);
+            int j =0;
+            Iterator<String> valIt =  this.factor.keySet().iterator();
+            while (valIt.hasNext()){
+             String thisVal =  valIt.next();
+             if(thisVal.contains(v_arr+"=") && !thisVal.contains(Evi[i])){
+                 toRemove[j]=thisVal;
+              j++;
+             }
+             else if(thisVal.contains(Evi[i])){
+                 thisVal.replace(Evi[i],"");
+             }
+            }
+        }
+        for (int i = 0; i <toRemove.length ; i++) {
+            factor.remove(toRemove[i]);
+        }
+    }
+
+    public void CPTtoFactor(variable v, CPT cpt) {
+
         String strAdd = v.getName();
-        if(!factor.names.contains(strAdd)){
-            factor.names.add(strAdd);
+        if(!this.factorName.contains(strAdd)){
+            this.factorName.add(strAdd);
         }
         Iterator<String> it = cpt.iterator();
         while (it.hasNext()) {
@@ -39,28 +68,27 @@ public class Factor {
 
                if(thisPar==""){
 
-                   factor.factor.put(v.getName() + "=" + thisVal, cpt.getCpt().get(thisPar).get(thisVal));
+                   this.factor.put(v.getName() + "=" + thisVal, cpt.getCpt().get(thisPar).get(thisVal));
 
                }else {
-                   factor.factor.put(thisPar + "," + v.getName() + "=" + thisVal, cpt.getCpt().get(thisPar).get(thisVal));
+                   this.factor.put(thisPar + "," + v.getName() + "=" + thisVal, cpt.getCpt().get(thisPar).get(thisVal));
                   String[] tempstr =   thisPar.split(",");
                    for (int i = 0; i < tempstr.length; i++) {
                       String strToAdd = tempstr[i].split("=")[0];
-                      if(!factor.names.contains(strToAdd)){
-                          factor.names.add(strToAdd);
+                      if(!this.factorName.contains(strToAdd)){
+                          this.factorName.add(strToAdd);
                       }
                    }
                }
             }
         }
 
-        return factor;
     }
 
     @Override
     public String toString() {
         return "Factor{" +
-                "names=" + names +
+                "name=" + factorName +
                 ", factor=" + factor +
                 '}';
     }

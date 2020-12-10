@@ -59,28 +59,18 @@ public class Queries {
         int j = 0;
 
 
-//        v_arr[j] = query;
-//        val_arr[j] =queryVal;
-//        j++;
         for (String evi : evilist) {
-            v_arr[j] = g.getG().get(evi.substring(0, 1));
-            val_arr[j] = evi.substring(evi.indexOf("="));
+            int index = evi.indexOf("=");
+            v_arr[j] = g.getG().get(evi.substring(0, index));
+            val_arr[j] = evi.substring(index+1);
             j++;
         }
 
         for (variable v: g.getV()) {
-            System.out.println((new Factor().CPTtoFactor(v,v.getCPT())));
+          Factor f = new Factor(v, evilist);
+            System.out.println(f);
         }
         System.out.println();
-
-       // System.out.println(Arrays.toString(v_arr));
-        //System.out.println(new Factor(g.getG().get("A"),v_arr,val_arr));
-
-
-//        System.out.println(hidden);
-//        System.out.println(query.isAncestor(g.getG().get("Q")));
-//        System.out.println("1212323131212323" + query.getAncestor());
-        //MakeFactorsFromCpt(query.getCPT(),evilist);
 
 
         return 1;
