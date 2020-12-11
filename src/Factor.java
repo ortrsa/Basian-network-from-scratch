@@ -11,7 +11,7 @@ public class Factor {
         factorName = new ArrayList<>();
     }
 
-    public Factor(variable var , String[] Evi ) {
+    public Factor(variable var, String[] Evi) {
         factor = new HashMap<>();
         factorName = new ArrayList<>();
         CPTtoFactor(var, var.getCPT());
@@ -28,41 +28,61 @@ public class Factor {
         return i;
     }
 
-    private void RemoveEvidenceFromFactor(String[] Evi){
-        String[] toRemove = new String[this.factor.size()];
-        for (int i = 0; i < Evi.length ; i++) {
+    private void RemoveEvidenceFromFactor(String[] Evi) {
+        HashMap<String, Double> newFactor = new HashMap<>();
+        String newValName = "";
+        boolean enter = false;
+        for (int i = 0; i < Evi.length; i++) {
             int index = Evi[i].indexOf("=");
             String v_arr = Evi[i].substring(0, index);
-            String val_arr = Evi[i].substring(index+1);
-            factorName.remove(v_arr);
-            int j =0;
-            Iterator<String> valIt =  this.factor.keySet().iterator();
-            while (valIt.hasNext()){
-             String thisVal =  valIt.next();
-             if(thisVal.contains(v_arr+"=") && !thisVal.contains(Evi[i])){
-                 toRemove[j]=thisVal;
-              j++;
-             }
-             else if(thisVal.contains(Evi[i])){ // dont applay on HM (cant change HM key!!! *****)
-                 if(thisVal.contains(","+Evi[i]+",")){thisVal =  thisVal.replace(Evi[i]+",","");}
-                 else if(thisVal.contains(Evi[i]+",")){thisVal =  thisVal.replace(Evi[i]+",","");}
-                 else if (thisVal.contains(","+Evi[i])){thisVal =  thisVal.replace(","+Evi[i],"");}
-
-                 //System.out.println(thisVal);
-
-             }
+            if(factorName.contains(v_arr)){
+                enter = true;
             }
         }
-        for (int i = 0; i <toRemove.length ; i++) {
-            factor.remove(toRemove[i]);
+        if(enter) {
+
+
+            for (int i = 0; i < Evi.length; i++) {
+                int index = Evi[i].indexOf("=");
+                String v_arr = Evi[i].substring(0, index);
+                if (!factorName.contains(v_arr)) continue;
+                factorName.remove(v_arr);
+
+                Iterator<String> valIt = this.factor.keySet().iterator();
+                while (valIt.hasNext()) {
+                    String thisVal = valIt.next();
+                    double thisProb = this.factor.get(thisVal);
+                    boolean add = true;
+                    if (thisVal.contains(v_arr + "=") && !thisVal.contains(Evi[i])) {
+                        add = false;
+
+                    } else if (thisVal.contains(Evi[i])) {
+                        if (thisVal.contains("," + Evi[i] + ",")) {
+                            newValName = thisVal.replace(Evi[i] + ",", "");
+                        } else if (thisVal.contains(Evi[i] + ",")) {
+                            newValName = thisVal.replace(Evi[i] + ",", "");
+                        } else if (thisVal.contains("," + Evi[i])) {
+                            newValName = thisVal.replace("," + Evi[i], "");
+                        } else {
+                            newValName = "" + thisVal;
+                        }
+
+                    }
+
+                    if (add) {
+                        newFactor.put(newValName, thisProb);
+                    }
+                }
+
+            }
+            factor = newFactor;
         }
-System.out.println(factor);
     }
 
     public void CPTtoFactor(variable v, CPT cpt) {
 
         String strAdd = v.getName();
-        if(!this.factorName.contains(strAdd)){
+        if (!this.factorName.contains(strAdd)) {
             this.factorName.add(strAdd);
         }
         Iterator<String> it = cpt.iterator();
@@ -72,41 +92,42 @@ System.out.println(factor);
             while (it1.hasNext()) {
                 String thisVal = it1.next();
 
-               if(thisPar==""){
+                if (thisPar == "") {
 
-                   this.factor.put(v.getName() + "=" + thisVal, cpt.getCpt().get(thisPar).get(thisVal));
+                    this.factor.put(v.getName() + "=" + thisVal, cpt.getCpt().get(thisPar).get(thisVal));
 
-               }else {
-                   this.factor.put(thisPar + "," + v.getName() + "=" + thisVal, cpt.getCpt().get(thisPar).get(thisVal));
-                  String[] tempstr =   thisPar.split(",");
-                   for (int i = 0; i < tempstr.length; i++) {
-                      String strToAdd = tempstr[i].split("=")[0];
-                      if(!this.factorName.contains(strToAdd)){
-                          this.factorName.add(strToAdd);
-                      }
-                   }
-               }
+                } else {
+                    this.factor.put(thisPar + "," + v.getName() + "=" + thisVal, cpt.getCpt().get(thisPar).get(thisVal));
+                    String[] tempstr = thisPar.split(",");
+                    for (int i = 0; i < tempstr.length; i++) {
+                        String strToAdd = tempstr[i].split("=")[0];
+                        if (!this.factorName.contains(strToAdd)) {
+                            this.factorName.add(strToAdd);
+                        }
+                    }
+                }
             }
         }
 
     }
 
-public boolean hasOneVal(){
-        return factor.size()<=1;
-}
-public int getAsciiVal(){
-   int sum = 0;
-    for (String name: factorName ) {
-
-        for (char c: name.toCharArray()) {
-           sum+=c;
-        }
-
+    public boolean hasOneVal() {
+        return factor.size() <= 1;
     }
-        return sum;
-}
 
-    public Iterator<String> valIterator(){
+    public int getAsciiVal() {
+        int sum = 0;
+        for (String name : factorName) {
+
+            for (char c : name.toCharArray()) {
+                sum += c;
+            }
+
+        }
+        return sum;
+    }
+
+    public Iterator<String> valIterator() {
         return factor.keySet().iterator();
     }
 
@@ -117,12 +138,13 @@ public int getAsciiVal(){
     public void setFactorName(ArrayList<String> factorName) {
         this.factorName = factorName;
     }
-    public double getProb(String val){
+
+    public double getProb(String val) {
         return factor.get(val);
     }
 
     public void addLine(String str, double prob) {
-        factor.put(str,prob);
+        factor.put(str, prob);
 
     }
 

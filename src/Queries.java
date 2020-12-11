@@ -52,8 +52,9 @@ public class Queries {
             Answer = gft;
             return gft;
         }
-        HashMap<String, variable> hidden = RemoveQueryFromHidden(g.copy());
-        BetterRemoveFromHidden(hidden);
+
+        HashMap<String, variable> hidden = BetterRemoveFromHidden(g.copy());
+
         variable[] v_arr = new variable[evilist.length ];
         String[] val_arr = new String[evilist.length ];
         int j = 0;
@@ -61,15 +62,16 @@ public class Queries {
 
         for (String evi : evilist) {
             int index = evi.indexOf("=");
-            v_arr[j] = g.getG().get(evi.substring(0, index));
-            val_arr[j] = evi.substring(index+1);
+            v_arr[j] = g.getG().get(evi.substring(0, index)); //evidence variable names
+            val_arr[j] = evi.substring(index+1); // evidence values
             j++;
         }
 
         for (variable v: g.getV()) {
-          Factor f = new Factor(v, evilist);
-            if (!f.hasOneVal()){
-                factorQAlgo2.add(f);}
+          Factor f = new Factor(v, evilist); // make factors from every variable and from evidence list
+            System.out.println(f);
+            if (!f.hasOneVal()){ // if thar is only one value don't add this factor
+                factorQAlgo2.add(f);} //add the factor to PriorityQueue
         }
         while (!factorQAlgo2.isEmpty()){
             if(factorQAlgo2.size()>1) {
@@ -250,7 +252,7 @@ public class Queries {
     }
 
     public HashMap<String, variable> RemoveQueryFromHidden(HashMap<String, variable> hidden) {
-        HashMap<String, variable> temp = g.copy();
+        HashMap<String, variable> temp = g.copy(); // this temp is for fixing delete from Iterator
         Iterator<String> hiddenIt = temp.keySet().iterator();
         while (hiddenIt.hasNext()) {
             String hiddenVar = hiddenIt.next();
@@ -270,7 +272,7 @@ public class Queries {
     }
 
     public HashMap<String, variable> BetterRemoveFromHidden(HashMap<String, variable> hidden) {
-        HashMap<String, variable> temp = g.copy();
+        HashMap<String, variable> temp = g.copy(); // this temp is for fixing delete from Iterator
         Iterator<String> hiddenIt = temp.keySet().iterator();
         while (hiddenIt.hasNext()) {
             String hiddenVar = hiddenIt.next();
@@ -293,10 +295,7 @@ public class Queries {
 
     private void joinFactors(Factor F1 , Factor F2){
     Factor F3 = new Factor();
-    System.out.println("f1 : ----"+F1);
-    System.out.println("f2 : ----"+F2);
         F3.setFactorName(mergeFactorName(F1,F2));
-        System.out.println(F3.getFactorName());
         ArrayList<String> CommonVals = new ArrayList<>();
         ArrayList<String> NonCommonVals = new ArrayList<>();
         Iterator<String> It1 = F1.valIterator();
@@ -313,19 +312,25 @@ public class Queries {
             }
             Iterator<String> It2 = F2.valIterator();
             while (It2.hasNext()){
+                ArrayList<String> addedFromF2 = new ArrayList<>();
                 String otherVal = It2.next();
+                String[] otherValArr= otherVal.split(",");
+                String toAdd ="";
+                for (int i = 0; i < otherValArr.length; i++) {
+                    if(!CommonVals.contains(otherValArr[i])){ toAdd = otherValArr[i];}
+                }
                 boolean containsAll = true;
                 for (String commonVal: CommonVals) {
                     if(!otherVal.contains(commonVal)){containsAll= false;}
                 }
                 if(containsAll){
-                    System.out.println(thisVal +"  " +otherVal +" =" + F1.getProb(thisVal) * F2.getProb(otherVal) );
-                    F3.addLine( otherVal, F1.getProb(thisVal) * F2.getProb(otherVal));
+                    F3.addLine( thisVal+","+toAdd, F1.getProb(thisVal) * F2.getProb(otherVal));
                 }
 
             }
+
         }
-    System.out.println("       "+F3);
+        //System.out.println(F3);
     }
 
     private ArrayList<String> mergeFactorName(Factor F1 , Factor F2){

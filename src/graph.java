@@ -9,8 +9,6 @@ public class graph {
 
     private HashMap<String, variable> g;
 
-
-
     public graph(String File) {
         g = new HashMap<>();
 
@@ -95,8 +93,6 @@ public class graph {
                     //System.out.println(q.getFromTable());
                }
             }
-
-
 
         }
 
