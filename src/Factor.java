@@ -58,11 +58,11 @@ public class Factor {
 
                     } else if (thisVal.contains(Evi[i])) {
                         if (thisVal.contains("," + Evi[i] + ",")) {
-                            newValName = thisVal.replace(Evi[i] + ",", "");
-                        } else if (thisVal.contains(Evi[i] + ",")) {
-                            newValName = thisVal.replace(Evi[i] + ",", "");
+                            newValName = thisVal.replace(","+Evi[i] + ",", "");
                         } else if (thisVal.contains("," + Evi[i])) {
-                            newValName = thisVal.replace("," + Evi[i], "");
+                            newValName = thisVal.replace( "," +Evi[i] , "");
+                        } else if (thisVal.contains(Evi[i]+ ",")) {
+                            newValName = thisVal.replace( Evi[i]+",", "");
                         } else {
                             newValName = "" + thisVal;
                         }
