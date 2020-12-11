@@ -71,21 +71,22 @@ public class Queries {
             FactorList.add(f);
             System.out.println(f);
         }
-        //  for (String h : hidden.keySet()) {
+         // for (String h : hidden.keySet()) {
         getAllFactorWith("A");
 
         while (!factorQAlgo2.isEmpty()) {
             if (factorQAlgo2.size() > 1) {
                 Factor a = factorQAlgo2.poll();
                 Factor b = factorQAlgo2.poll();
-                System.out.println("factor a: " + a);
-                System.out.println("factor b: " + b);
+//                System.out.println("factor a: " + a);
+//                System.out.println("factor b: " + b);
                 joinFactors(a, b);
             } else {
+
                 Eliminate(factorQAlgo2.poll(), "A");
             }
         }
-        //}
+      //  }
         //  }
         //System.out.println(factorQAlgo2.poll());
 
@@ -97,8 +98,9 @@ public class Queries {
     }
 
     private void Eliminate(Factor f, String var) {
-        HashMap<String, Double> newFactor = new HashMap<>();
+        Factor newFactor = new Factor();
         f.getFactorName().remove(var);
+        newFactor.setFactorName( f.getFactorName());
         String val ="";
         String newValName ="";
         Iterator<String> it = f.valIterator();
@@ -133,7 +135,7 @@ public class Queries {
                     break;}
                 }
                 if(flag && !thisValues.equals(otherValue) ){
-                    newFactor.put(newValName, f.getProb(thisValues)+f.getProb(otherValue));
+                    newFactor.addLine(newValName, f.getProb(thisValues)+f.getProb(otherValue));
                 }
             }
 
@@ -255,11 +257,6 @@ public class Queries {
         return sum;
     }
 
-    public CPT MakeFactorsFromCpt(CPT cpt, String[] evilist) {
-        CPT factor = new CPT(cpt);
-
-        return factor;
-    }
 
     public double getFromTable() {
         Iterator<String> it = query.getCPT().getCpt().keySet().iterator();
@@ -287,15 +284,7 @@ public class Queries {
     }
 
 
-    public String EviToString(variable[] v, String[] val) {
-        String str = "";
-        for (int i = 0; i < v.length; i++) {
-            str += v[i].getName() + "=" + val[i] + ",";
-        }
 
-        return str.substring(0, str.length() - 1);
-
-    }
 
     public HashMap<String, variable> RemoveQueryFromHidden(HashMap<String, variable> hidden) {
         HashMap<String, variable> temp = g.copy(); // this temp is for fixing delete from Iterator
