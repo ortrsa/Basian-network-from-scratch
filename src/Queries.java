@@ -69,6 +69,7 @@ public class Queries {
         for (variable v : g.getV()) {
             Factor f = new Factor(v, evilist); // make factors from every variable and from evidence list
             FactorList.add(f);
+            System.out.println(f);
         }
         //  for (String h : hidden.keySet()) {
         getAllFactorWith("A");
@@ -356,7 +357,8 @@ public class Queries {
             String thisVal = It1.next();
             String[] valArr = thisVal.split(",");
             for (int i = 0; i < valArr.length; i++) {
-                if (F3.getFactorName().contains(valArr[i].substring(0, valArr[i].indexOf("=")))) {
+                String common = valArr[i].substring(0, valArr[i].indexOf("="));
+                if (F1.getFactorName().contains(common) &&F2.getFactorName().contains(common)) {
                     CommonVals.add(valArr[i]);
                 } else {
                     NonCommonVals.add(valArr[i]);
@@ -372,6 +374,7 @@ public class Queries {
                         toAdd += "," + otherValArr[i];
                     }
                 }
+
                 boolean containsAll = true;
                 for (String commonVal : CommonVals) {
                     if (!otherVal.contains(commonVal)) {
