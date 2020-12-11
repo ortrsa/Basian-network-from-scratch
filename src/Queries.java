@@ -7,6 +7,7 @@ public class Queries {
     private String[] evilist;
     private PriorityQueue<Factor> factorQAlgo2 = new PriorityQueue<>(new Algo2Comparator());
     private graph g;
+    private ArrayList<Factor> FactorList = new ArrayList<>();
     private double Answer;
     private int sumOfAdd = 0;
     private int sumOfMul = 0;
@@ -53,13 +54,11 @@ public class Queries {
             return gft;
         }
 
+
+        variable[] v_arr = new variable[evilist.length];
+        String[] val_arr = new String[evilist.length];
         HashMap<String, variable> hidden = BetterRemoveFromHidden(g.copy());
-
-        variable[] v_arr = new variable[evilist.length ];
-        String[] val_arr = new String[evilist.length ];
         int j = 0;
-
-
         for (String evi : evilist) {
             int index = evi.indexOf("=");
             v_arr[j] = g.getG().get(evi.substring(0, index)); //evidence variable names
@@ -68,21 +67,10 @@ public class Queries {
         }
 
         for (variable v: g.getV()) {
-          Factor f = new Factor(v, evilist); // make factors from every variable and from evidence list
-            System.out.println(f);
-            if (!f.hasOneVal()){ // if thar is only one value don't add this factor
-                factorQAlgo2.add(f);} //add the factor to PriorityQueue
+            Factor f = new Factor(v, evilist); // make factors from every variable and from evidence list
+            FactorList.add(f);
         }
-        while (!factorQAlgo2.isEmpty()){
-            if(factorQAlgo2.size()>1) {
 
-                 joinFactors(factorQAlgo2.poll() ,factorQAlgo2.poll() );
-            }
-            else {
-                Eliminate(factorQAlgo2.poll());
-            }
-       //System.out.println(factorQAlgo2.poll());
-        }
         System.out.println();
 
 
@@ -271,7 +259,7 @@ public class Queries {
         return hidden;
     }
 
-    public HashMap<String, variable> BetterRemoveFromHidden(HashMap<String, variable> hidden) {
+    public HashMap<String, variable> BetterRemoveFromHidden(HashMap<String, variable> hidden ) {
         HashMap<String, variable> temp = g.copy(); // this temp is for fixing delete from Iterator
         Iterator<String> hiddenIt = temp.keySet().iterator();
         while (hiddenIt.hasNext()) {
@@ -279,10 +267,17 @@ public class Queries {
             if (hiddenVar.equals(query.getName())) {
                 hidden.remove(hiddenVar);
             } else if (!query.isAncestor(g.getG().get(hiddenVar))) {
-                hidden.remove(hiddenVar);
+                for (String evi : evilist) { ;
+                    if (!g.getG().get(evi.substring(0, evi.indexOf("="))).isAncestor(g.getG().get(hiddenVar))) {
+                        hidden.remove(hiddenVar);
+                        break;
+                    }
+                }
+
+                //hidden.remove(hiddenVar);
             } else {
                 for (String evi : evilist) {
-                    if (hiddenVar.equals(evi.substring(0, 1))) {
+                    if (hiddenVar.equals(evi.substring(0, evi.indexOf("=")))) {
                         hidden.remove(hiddenVar);
 
                     }
@@ -296,10 +291,10 @@ public class Queries {
     private void joinFactors(Factor F1 , Factor F2){
     Factor F3 = new Factor();
         F3.setFactorName(mergeFactorName(F1,F2));
-        ArrayList<String> CommonVals = new ArrayList<>();
-        ArrayList<String> NonCommonVals = new ArrayList<>();
         Iterator<String> It1 = F1.valIterator();
         while (It1.hasNext()){
+            ArrayList<String> CommonVals = new ArrayList<>();
+            ArrayList<String> NonCommonVals = new ArrayList<>();
             String thisVal = It1.next();
             String[] valArr= thisVal.split(",");
             for (int i = 0; i < valArr.length; i++) {
@@ -312,7 +307,6 @@ public class Queries {
             }
             Iterator<String> It2 = F2.valIterator();
             while (It2.hasNext()){
-                ArrayList<String> addedFromF2 = new ArrayList<>();
                 String otherVal = It2.next();
                 String[] otherValArr= otherVal.split(",");
                 String toAdd ="";
@@ -330,7 +324,7 @@ public class Queries {
             }
 
         }
-        //System.out.println(F3);
+        System.out.println(F3);
     }
 
     private ArrayList<String> mergeFactorName(Factor F1 , Factor F2){
@@ -341,6 +335,17 @@ public class Queries {
             if(!ans.contains(name)){ans.add(name);}
         }
         return ans;
+    }
+
+    private ArrayList<Factor> getFactorsWith(String name){
+        ArrayList<Factor> Factors = new ArrayList<>();
+        for (Factor f:FactorList) {
+            if(f.getFactorName().contains(name)){
+                Factors.add(f);
+            }
+        }
+
+        return Factors;
     }
 
 
