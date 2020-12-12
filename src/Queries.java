@@ -123,6 +123,49 @@ public class Queries {
 
     }
 
+
+    public double Algo1() {
+        double gft = getFromTable();
+        if (gft != -1) {
+            Answer = gft;
+            return gft;
+        }
+        HashMap<String, variable> hidden = RemoveQueryFromHidden(g.copy());
+        variable[] v_arr = new variable[evilist.length + 1 + hidden.size()];
+        String[] val_arr = new String[evilist.length + 1 + hidden.size()];
+        int j = 0;
+        double norm = 0.0;
+        double ans = 0.0;
+
+        v_arr[j] = query;
+        j++;
+        for (String evi : evilist) {
+            int index = evi.indexOf("=");
+            v_arr[j] = g.getG().get(evi.substring(0, index));
+            val_arr[j] = evi.substring(index + 1);
+            j++;
+        }
+
+
+        for (int i = 0; i < query.getValues().length; i++) {
+            val_arr[0] = query.getValues()[i];
+            double temp = jointProb(j, hidden, v_arr, val_arr);
+            if (val_arr[0].equals(queryVal)) {
+                ans = temp;
+            } else {
+                norm += temp;
+                sumOfAdd++;
+            }
+
+        }
+
+        Answer = ans / (norm + ans);
+//        System.out.println(Answer);
+//        System.out.println("add " + sumOfAdd);
+//        System.out.println("mul " + sumOfMul);
+        return ans / (norm + ans);
+    }
+
     private void NormFactor(Factor f) {
         Iterator<String> it = f.valIterator();
         double sum = 0.0;
@@ -188,55 +231,13 @@ public class Queries {
                     probsum += f.getProb(otherValue);
                 }
             }
-            if(!added.contains(newValName)){
-            newFactor.addLine(newValName, probsum);
-            added.add(newValName);
+            if (!added.contains(newValName)) {
+                newFactor.addLine(newValName, probsum);
+                added.add(newValName);
             }
         }
         FactorList.add(newFactor);
 
-    }
-
-    public double Algo1() {
-        double gft = getFromTable();
-        if (gft != -1) {
-            Answer = gft;
-            return gft;
-        }
-        HashMap<String, variable> hidden = RemoveQueryFromHidden(g.copy());
-        variable[] v_arr = new variable[evilist.length + 1 + hidden.size()];
-        String[] val_arr = new String[evilist.length + 1 + hidden.size()];
-        int j = 0;
-        double norm = 0.0;
-        double ans = 0.0;
-
-        v_arr[j] = query;
-        j++;
-        for (String evi : evilist) {
-            int index = evi.indexOf("=");
-            v_arr[j] = g.getG().get(evi.substring(0, index));
-            val_arr[j] = evi.substring(index + 1);
-            j++;
-        }
-
-
-        for (int i = 0; i < query.getValues().length; i++) {
-            val_arr[0] = query.getValues()[i];
-            double temp = jointProb(j, hidden, v_arr, val_arr);
-            if (val_arr[0].equals(queryVal)) {
-                ans = temp;
-            } else {
-                norm += temp;
-                sumOfAdd++;
-            }
-
-        }
-
-        Answer = ans / (norm + ans);
-//        System.out.println(Answer);
-//        System.out.println("add " + sumOfAdd);
-//        System.out.println("mul " + sumOfMul);
-        return ans / (norm + ans);
     }
 
     public double jointProb(int j, HashMap<String, variable> hidden, variable[] v_arr, String[] val_arr) {
