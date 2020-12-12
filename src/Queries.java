@@ -87,17 +87,20 @@ public class Queries {
         for (String h : hidden.keySet()) {
             getAllFactorWith(h);
 
+//////////////////////////////******************************************
             while (!factorQAlgo2.isEmpty()) {
                 if (factorQAlgo2.size() > 1) {
                     Factor a = factorQAlgo2.poll();
                     Factor b = factorQAlgo2.poll();
 //                System.out.println("factor a: " + a);
 //                System.out.println("factor b: " + b);
-                    joinFactors(a, b);
+                joinFactors(a, b);
                 } else {
-//                    System.out.println(factorQAlgo2.size());
-//                    System.out.println("   "+factorQAlgo2.poll());
-                    Eliminate(factorQAlgo2.poll(), h);
+                    Factor c = factorQAlgo2.poll();
+//                    System.out.println("to eliminate with "+h+": "+ c);
+                  //  System.out.println(c);
+                    Eliminate(c, h);
+                   // System.out.println(c);
                 }
             }
         }
@@ -107,6 +110,8 @@ public class Queries {
             if(factorQAlgo2.size() > 1) {
                 Factor a = factorQAlgo2.poll();
                 Factor b = factorQAlgo2.poll();
+//                System.out.println(a);
+//                System.out.println(b);
                 FactorList.remove(a);
                 FactorList.remove(b);
                 joinFactors(a, b);
@@ -115,17 +120,15 @@ public class Queries {
                 FactorList.remove(a);
                 NormFactor(a);
                 ans = a;
+               System.out.println(a);
             }
         }
 
 
-        //  }
-        //System.out.println(factorQAlgo2.poll());
-
-        System.out.println();
 
 
-        return 1;
+        Answer = ans.getProb(query.getName()+"="+queryVal);
+        return ans.getProb(query.getName()+"="+queryVal);
 
     }
 
@@ -144,7 +147,7 @@ public class Queries {
 
     }
 
-    private void Eliminate(Factor f, String var) {
+    private void Eliminate(Factor f, String var) { // not work well on output2
         Factor newFactor = new Factor();
         f.getFactorName().remove(var);
         newFactor.setFactorName(f.getFactorName());
@@ -175,6 +178,7 @@ public class Queries {
                 }
             }
             Iterator<String> it1 = f.valIterator();
+            double probsum = f.getProb(thisValues); // chack if need to add to addSum
             while (it1.hasNext()) {
                 String otherValue = it1.next();
                 boolean flag = true;
@@ -185,12 +189,11 @@ public class Queries {
                     }
                 }
                 if (flag && !thisValues.equals(otherValue)) {
-                    newFactor.addLine(newValName, f.getProb(thisValues) + f.getProb(otherValue));
+                    probsum+=f.getProb(otherValue);
                 }
             }
-
+            newFactor.addLine(newValName, probsum);
         }
-        System.out.println(newFactor);
         FactorList.add(newFactor);
 
     }
