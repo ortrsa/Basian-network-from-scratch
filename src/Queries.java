@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Queries {
@@ -57,36 +58,49 @@ public class Queries {
 
         variable[] v_arr = new variable[evilist.length];
         String[] val_arr = new String[evilist.length];
-        HashMap<String, variable> hidden = BetterRemoveFromHidden(g.copy());
+        HashMap<String, variable> hidden = BetterRemoveFromHidden(g.copy());//////    need to delete ancecer from factors
         int j = 0;
-        for (String evi : evilist) {
+        for (String evi : evilist) {// split to Var and Vals for evilist
             int index = evi.indexOf("=");
             v_arr[j] = g.getG().get(evi.substring(0, index)); //evidence variable names
             val_arr[j] = evi.substring(index + 1); // evidence values
             j++;
         }
 
-        for (variable v : g.getV()) {
-            Factor f = new Factor(v, evilist); // make factors from every variable and from evidence list
-            FactorList.add(f);
-            System.out.println(f);
-        }
-         // for (String h : hidden.keySet()) {
-        getAllFactorWith("A");
+        for (variable v : g.getV()) { // make factors without !isAncestor
+            boolean flag = false;
+            for (int i = 0; i < evilist.length; i++) {
+                if (g.getG().get(evilist[i].substring(0, evilist[i].indexOf("="))).isAncestor(v)) {
+                    flag = true;
+                }
+            }
 
-        while (!factorQAlgo2.isEmpty()) {
-            if (factorQAlgo2.size() > 1) {
-                Factor a = factorQAlgo2.poll();
-                Factor b = factorQAlgo2.poll();
-//                System.out.println("factor a: " + a);
-//                System.out.println("factor b: " + b);
-                joinFactors(a, b);
-            } else {
-
-                Eliminate(factorQAlgo2.poll(), "A");
+            if (query.isAncestor(v) || Arrays.asList(v_arr).contains(v) || flag || query.equals(v)) {
+                Factor f = new Factor(v, evilist); // make factors from every variable and from evidence list
+                if (!f.getFactorName().isEmpty()) {
+                    FactorList.add(f);
+                }
             }
         }
-      //  }
+
+    System.out.println(FactorList);
+        for (String h : hidden.keySet()) {
+            getAllFactorWith(h);
+
+            while (!factorQAlgo2.isEmpty()) {
+                if (factorQAlgo2.size() > 1) {
+                    Factor a = factorQAlgo2.poll();
+                    Factor b = factorQAlgo2.poll();
+                System.out.println("factor a: " + a);
+                System.out.println("factor b: " + b);
+                    joinFactors(a, b);
+                } else {
+//                    System.out.println(factorQAlgo2.size());
+//                    System.out.println("   "+factorQAlgo2.poll());
+                    Eliminate(factorQAlgo2.poll(), h);
+                }
+            }
+        }
         //  }
         //System.out.println(factorQAlgo2.poll());
 
@@ -100,47 +114,52 @@ public class Queries {
     private void Eliminate(Factor f, String var) {
         Factor newFactor = new Factor();
         f.getFactorName().remove(var);
-        newFactor.setFactorName( f.getFactorName());
-        String val ="";
-        String newValName ="";
+        newFactor.setFactorName(f.getFactorName());
+        String val = "";
+        String newValName = "";
         Iterator<String> it = f.valIterator();
         while (it.hasNext()) {
+
             String thisValues = it.next();
             String[] ValuesArr = thisValues.split(",");
-           String[] sum= new String[ValuesArr.length];
-           int j = 0;
+            String[] sum = new String[ValuesArr.length];
+            int j = 0;
             for (int i = 0; i < ValuesArr.length; i++) {
-                if(ValuesArr[i].substring(0,ValuesArr[i].indexOf("=")).equals(var)){
+                if (ValuesArr[i].substring(0, ValuesArr[i].indexOf("=")).equals(var)) {
                     val = ValuesArr[i];
                     if (thisValues.contains("," + val + ",")) {
-                        newValName = thisValues.replace(","+val + ",", "");
+                        newValName = thisValues.replace( val + ",", "");
                     } else if (thisValues.contains("," + val)) {
-                        newValName = thisValues.replace( "," +val , "");
-                    } else if (thisValues.contains(val+ ",")) {
-                        newValName = thisValues.replace( val+",", "");
+                        newValName = thisValues.replace("," + val, "");
+                    } else if (thisValues.contains(val + ",")) {
+                        newValName = thisValues.replace(val + ",", "");
                     } else {
                         newValName = "" + thisValues;
                     }
-                }else{
+                } else {
                     sum[j] = ValuesArr[i];
                     j++;
                 }
             }
             Iterator<String> it1 = f.valIterator();
-            while (it1.hasNext()){
+            while (it1.hasNext()) {
                 String otherValue = it1.next();
                 boolean flag = true;
                 for (int i = 0; i < j; i++) {
-                    if(!otherValue.contains(sum[i])){flag = false;
-                    break;}
+                    if (!otherValue.contains(sum[i])) {
+                        flag = false;
+                        break;
+                    }
                 }
-                if(flag && !thisValues.equals(otherValue) ){
-                    newFactor.addLine(newValName, f.getProb(thisValues)+f.getProb(otherValue));
+                if (flag && !thisValues.equals(otherValue)) {
+                    newFactor.addLine(newValName, f.getProb(thisValues) + f.getProb(otherValue));
                 }
             }
 
         }
-        System.out.println(newFactor);
+        FactorList.add(newFactor);
+        System.out.println(" " + f);
+        System.out.println("   "+newFactor);
     }
 
     public double Algo1() {
@@ -284,8 +303,6 @@ public class Queries {
     }
 
 
-
-
     public HashMap<String, variable> RemoveQueryFromHidden(HashMap<String, variable> hidden) {
         HashMap<String, variable> temp = g.copy(); // this temp is for fixing delete from Iterator
         Iterator<String> hiddenIt = temp.keySet().iterator();
@@ -315,7 +332,6 @@ public class Queries {
                 hidden.remove(hiddenVar);
             } else if (!query.isAncestor(g.getG().get(hiddenVar))) {
                 for (String evi : evilist) {
-                    ;
                     if (!g.getG().get(evi.substring(0, evi.indexOf("="))).isAncestor(g.getG().get(hiddenVar))) {
                         hidden.remove(hiddenVar);
                         break;
@@ -347,7 +363,7 @@ public class Queries {
             String[] valArr = thisVal.split(",");
             for (int i = 0; i < valArr.length; i++) {
                 String common = valArr[i].substring(0, valArr[i].indexOf("="));
-                if (F1.getFactorName().contains(common) &&F2.getFactorName().contains(common)) {
+                if (F1.getFactorName().contains(common) && F2.getFactorName().contains(common)) {
                     CommonVals.add(valArr[i]);
                 } else {
                     NonCommonVals.add(valArr[i]);
@@ -378,6 +394,7 @@ public class Queries {
             }
 
         }
+
         factorQAlgo2.add(F3);
     }
 
@@ -394,12 +411,15 @@ public class Queries {
     }
 
     private void getAllFactorWith(String name) {
+        ArrayList<Factor> temp = new ArrayList<>();
         for (Factor f : FactorList) {
             if (f.getFactorName().contains(name)) {
                 factorQAlgo2.add(f);
+            } else {
+                temp.add(f);
             }
         }
-
+        FactorList = temp;
     }
 
 

@@ -19,14 +19,6 @@ public class Factor {
 
     }
 
-    private int getVarIndex(variable var, variable[] givenVar) {
-        int i = 0;
-        if (!Arrays.asList(givenVar).contains(var)) return -1;
-        while (!var.equals(givenVar[i])) {
-            i++;
-        }
-        return i;
-    }
 
     private void RemoveEvidenceFromFactor(String[] Evi) {
         HashMap<String, Double> newFactor = new HashMap<>();
@@ -58,7 +50,7 @@ public class Factor {
 
                     } else if (thisVal.contains(Evi[i])) {
                         if (thisVal.contains("," + Evi[i] + ",")) {
-                            newValName = thisVal.replace(","+Evi[i] + ",", "");
+                            newValName = thisVal.replace(Evi[i] + ",", "");
                         } else if (thisVal.contains("," + Evi[i])) {
                             newValName = thisVal.replace( "," +Evi[i] , "");
                         } else if (thisVal.contains(Evi[i]+ ",")) {
