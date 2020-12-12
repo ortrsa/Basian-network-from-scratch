@@ -83,7 +83,7 @@ public class Queries {
             }
         }
 
-    System.out.println(FactorList);
+
         for (String h : hidden.keySet()) {
             getAllFactorWith(h);
 
@@ -91,8 +91,8 @@ public class Queries {
                 if (factorQAlgo2.size() > 1) {
                     Factor a = factorQAlgo2.poll();
                     Factor b = factorQAlgo2.poll();
-                System.out.println("factor a: " + a);
-                System.out.println("factor b: " + b);
+//                System.out.println("factor a: " + a);
+//                System.out.println("factor b: " + b);
                     joinFactors(a, b);
                 } else {
 //                    System.out.println(factorQAlgo2.size());
@@ -101,6 +101,24 @@ public class Queries {
                 }
             }
         }
+        factorQAlgo2.addAll(FactorList);
+        Factor ans= new Factor();
+        while (!factorQAlgo2.isEmpty()) {
+            if(factorQAlgo2.size() > 1) {
+                Factor a = factorQAlgo2.poll();
+                Factor b = factorQAlgo2.poll();
+                FactorList.remove(a);
+                FactorList.remove(b);
+                joinFactors(a, b);
+            }else {
+                Factor a = factorQAlgo2.poll();
+                FactorList.remove(a);
+                NormFactor(a);
+                ans = a;
+            }
+        }
+
+
         //  }
         //System.out.println(factorQAlgo2.poll());
 
@@ -108,6 +126,21 @@ public class Queries {
 
 
         return 1;
+
+    }
+
+    private void NormFactor(Factor f) {
+       Iterator<String> it = f.valIterator();
+       double sum =0.0;
+       while (it.hasNext()){
+         String thisVal = it.next();
+           sum +=  f.getProb(thisVal);
+       }
+        Iterator<String> it2 = f.valIterator();
+        while (it2.hasNext()){
+            String thisVal = it2.next();
+           f.addLine(thisVal , (f.getProb(thisVal)/sum));
+        }
 
     }
 
@@ -128,7 +161,7 @@ public class Queries {
                 if (ValuesArr[i].substring(0, ValuesArr[i].indexOf("=")).equals(var)) {
                     val = ValuesArr[i];
                     if (thisValues.contains("," + val + ",")) {
-                        newValName = thisValues.replace( val + ",", "");
+                        newValName = thisValues.replace(val + ",", "");
                     } else if (thisValues.contains("," + val)) {
                         newValName = thisValues.replace("," + val, "");
                     } else if (thisValues.contains(val + ",")) {
@@ -157,9 +190,9 @@ public class Queries {
             }
 
         }
+        System.out.println(newFactor);
         FactorList.add(newFactor);
-        System.out.println(" " + f);
-        System.out.println("   "+newFactor);
+
     }
 
     public double Algo1() {
