@@ -68,58 +68,6 @@ public class Factor {
     }
 
 
-    private void RemoveEvidenceFromFactor1(String[] Evi) {
-        HashMap<String, Double> newFactor = new HashMap<>();
-        String newValName = "";
-        boolean enter = false;
-        for (int i = 0; i < Evi.length; i++) {
-            int index = Evi[i].indexOf("=");
-            String v_arr = Evi[i].substring(0, index);
-            if (factorName.contains(v_arr)) {
-                enter = true;
-            }
-        }
-        if (enter) {
-
-            for (int i = 0; i < Evi.length; i++) {
-                int index = Evi[i].indexOf("=");
-                String v_arr = Evi[i].substring(0, index);
-                if (!factorName.contains(v_arr)) continue;
-                factorName.remove(v_arr);
-                Iterator<String> valIt = this.factor.keySet().iterator();
-                while (valIt.hasNext()) {
-                    String thisVal = valIt.next();
-                    double thisProb = this.factor.get(thisVal);
-                    boolean add = true;
-                    newValName = thisVal;
-                    for (int j = 0; j < Evi.length; j++) {
-
-                        if (thisVal.contains(v_arr + "=") && !thisVal.contains(Evi[i])) {
-                            add = false;
-
-                        } else if (newValName.contains(Evi[j])) {
-                            if (newValName.contains("," + Evi[j] + ",")) {
-                                newValName = newValName.replace(Evi[j] + ",", "");
-                            } else if (newValName.contains("," + Evi[j])) {
-                                newValName = newValName.replace("," + Evi[j], "");
-                            } else if (newValName.contains(Evi[j] + ",")) {
-                                newValName = newValName.replace(Evi[j] + ",", "");
-                            } else {
-                                //   newValName = "" + newValName;
-                            }
-
-                        }
-                    }
-                    if (add) {
-                        newFactor.put(newValName, thisProb);
-                    }
-                }
-
-            }
-            factor = newFactor;
-        }
-    }
-
     public void CPTtoFactor(variable v, CPT cpt) {
 
         String strAdd = v.getName();

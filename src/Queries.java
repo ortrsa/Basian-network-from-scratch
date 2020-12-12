@@ -23,7 +23,9 @@ public class Queries {
         this.queryVal = Qtemp[0].substring(Qtemp[0].indexOf("=") + 1);
         this.evilist = Qtemp[1].split(",");
         UseAlgo(algo);
-        System.out.println(Answer);
+        System.out.print(Answer);
+        System.out.print("  add = " + sumOfAdd);
+        System.out.println("  mult= " + sumOfMul);
 
 
     }
@@ -87,35 +89,27 @@ public class Queries {
         for (String h : hidden.keySet()) {
             getAllFactorWith(h);
 
-//////////////////////////////******************************************
             while (!factorQAlgo2.isEmpty()) {
                 if (factorQAlgo2.size() > 1) {
                     Factor a = factorQAlgo2.poll();
                     Factor b = factorQAlgo2.poll();
-//                System.out.println("factor a: " + a);
-//                System.out.println("factor b: " + b);
-                joinFactors(a, b);
+                    joinFactors(a, b);
                 } else {
                     Factor c = factorQAlgo2.poll();
-//                    System.out.println("to eliminate with "+h+": "+ c);
-                  //  System.out.println(c);
                     Eliminate(c, h);
-                   // System.out.println(c);
                 }
             }
         }
         factorQAlgo2.addAll(FactorList);
-        Factor ans= new Factor();
+        Factor ans = new Factor();
         while (!factorQAlgo2.isEmpty()) {
-            if(factorQAlgo2.size() > 1) {
+            if (factorQAlgo2.size() > 1) {
                 Factor a = factorQAlgo2.poll();
                 Factor b = factorQAlgo2.poll();
-//                System.out.println(a);
-//                System.out.println(b);
                 FactorList.remove(a);
                 FactorList.remove(b);
                 joinFactors(a, b);
-            }else {
+            } else {
                 Factor a = factorQAlgo2.poll();
                 FactorList.remove(a);
                 NormFactor(a);
@@ -124,32 +118,36 @@ public class Queries {
         }
 
 
-        Answer = ans.getProb(query.getName()+"="+queryVal);
-        return ans.getProb(query.getName()+"="+queryVal);
+        Answer = ans.getProb(query.getName() + "=" + queryVal);
+        return ans.getProb(query.getName() + "=" + queryVal);
 
     }
 
     private void NormFactor(Factor f) {
-       Iterator<String> it = f.valIterator();
-       double sum =0.0;
-       while (it.hasNext()){
-         String thisVal = it.next();
-           sum +=  f.getProb(thisVal);
-       }
+        Iterator<String> it = f.valIterator();
+        double sum = 0.0;
+        while (it.hasNext()) {
+            String thisVal = it.next();
+            if (sum != 0) {
+                sumOfAdd++;
+            }
+            sum += f.getProb(thisVal);
+        }
         Iterator<String> it2 = f.valIterator();
-        while (it2.hasNext()){
+        while (it2.hasNext()) {
             String thisVal = it2.next();
-           f.addLine(thisVal , (f.getProb(thisVal)/sum));
+            f.addLine(thisVal, (f.getProb(thisVal) / sum));
         }
 
     }
 
-    private void Eliminate(Factor f, String var) { // not work well on output2
+    private void Eliminate(Factor f, String var) {
         Factor newFactor = new Factor();
         f.getFactorName().remove(var);
         newFactor.setFactorName(f.getFactorName());
         String val = "";
         String newValName = "";
+        ArrayList<String> added = new ArrayList<>();
         Iterator<String> it = f.valIterator();
         while (it.hasNext()) {
 
@@ -175,7 +173,7 @@ public class Queries {
                 }
             }
             Iterator<String> it1 = f.valIterator();
-            double probsum = f.getProb(thisValues); // chack if need to add to addSum
+            double probsum = f.getProb(thisValues);
             while (it1.hasNext()) {
                 String otherValue = it1.next();
                 boolean flag = true;
@@ -185,11 +183,15 @@ public class Queries {
                         break;
                     }
                 }
-                if (flag && !thisValues.equals(otherValue)) {
-                    probsum+=f.getProb(otherValue);
+                if (flag && !thisValues.equals(otherValue) && !added.contains(newValName)) {
+                    sumOfAdd++;
+                    probsum += f.getProb(otherValue);
                 }
             }
+            if(!added.contains(newValName)){
             newFactor.addLine(newValName, probsum);
+            added.add(newValName);
+            }
         }
         FactorList.add(newFactor);
 
@@ -391,15 +393,12 @@ public class Queries {
         Iterator<String> It1 = F1.valIterator();
         while (It1.hasNext()) {
             ArrayList<String> CommonVals = new ArrayList<>();
-            ArrayList<String> NonCommonVals = new ArrayList<>();
             String thisVal = It1.next();
             String[] valArr = thisVal.split(",");
             for (int i = 0; i < valArr.length; i++) {
                 String common = valArr[i].substring(0, valArr[i].indexOf("="));
                 if (F1.getFactorName().contains(common) && F2.getFactorName().contains(common)) {
                     CommonVals.add(valArr[i]);
-                } else {
-                    NonCommonVals.add(valArr[i]);
                 }
             }
             Iterator<String> It2 = F2.valIterator();
@@ -420,7 +419,7 @@ public class Queries {
                     }
                 }
                 if (containsAll) {
-
+                    sumOfMul++;
                     F3.addLine(thisVal + "" + toAdd, F1.getProb(thisVal) * F2.getProb(otherVal));
                 }
 
