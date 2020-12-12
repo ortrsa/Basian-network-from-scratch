@@ -19,7 +19,6 @@ public class Factor {
 
     }
 
-
     private void RemoveEvidenceFromFactor(String[] Evi) {
         HashMap<String, Double> newFactor = new HashMap<>();
         String newValName = "";
@@ -27,40 +26,90 @@ public class Factor {
         for (int i = 0; i < Evi.length; i++) {
             int index = Evi[i].indexOf("=");
             String v_arr = Evi[i].substring(0, index);
-            if(factorName.contains(v_arr)){
+            if (factorName.contains(v_arr)) {
                 enter = true;
             }
         }
-        if(enter) {
 
+        if (!enter) return;
+        Iterator<String> valIt = this.factor.keySet().iterator();
+        while (valIt.hasNext()) {
+            String thisVal = valIt.next();
+            double thisProb = this.factor.get(thisVal);
+            boolean add = true;
+
+            newValName = thisVal;
+            for (int i = 0; i < Evi.length; i++) {
+                int index = Evi[i].indexOf("=");
+                String v_arr = Evi[i].substring(0, index); //evi name
+                if (!thisVal.contains(v_arr)) continue;
+                factorName.remove(v_arr);
+
+                if (thisVal.contains(v_arr + "=") && !thisVal.contains(Evi[i])) {
+                    add = false;
+                } else if (newValName.contains(Evi[i])) {
+                    if (newValName.contains("," + Evi[i] + ",")) {
+                        newValName = newValName.replace(Evi[i] + ",", "");
+                    } else if (newValName.contains("," + Evi[i])) {
+                        newValName = newValName.replace("," + Evi[i], "");
+                    } else if (newValName.contains(Evi[i] + ",")) {
+                        newValName = newValName.replace(Evi[i] + ",", "");
+                    }
+                }
+            }
+                if (add) {
+                    newFactor.put(newValName, thisProb);
+                }
+
+
+        }
+        factor = newFactor;
+
+    }
+
+
+    private void RemoveEvidenceFromFactor1(String[] Evi) {
+        HashMap<String, Double> newFactor = new HashMap<>();
+        String newValName = "";
+        boolean enter = false;
+        for (int i = 0; i < Evi.length; i++) {
+            int index = Evi[i].indexOf("=");
+            String v_arr = Evi[i].substring(0, index);
+            if (factorName.contains(v_arr)) {
+                enter = true;
+            }
+        }
+        if (enter) {
 
             for (int i = 0; i < Evi.length; i++) {
                 int index = Evi[i].indexOf("=");
                 String v_arr = Evi[i].substring(0, index);
                 if (!factorName.contains(v_arr)) continue;
                 factorName.remove(v_arr);
-
                 Iterator<String> valIt = this.factor.keySet().iterator();
                 while (valIt.hasNext()) {
                     String thisVal = valIt.next();
                     double thisProb = this.factor.get(thisVal);
                     boolean add = true;
-                    if (thisVal.contains(v_arr + "=") && !thisVal.contains(Evi[i])) {
-                        add = false;
+                    newValName = thisVal;
+                    for (int j = 0; j < Evi.length; j++) {
 
-                    } else if (thisVal.contains(Evi[i])) {
-                        if (thisVal.contains("," + Evi[i] + ",")) {
-                            newValName = thisVal.replace(Evi[i] + ",", "");
-                        } else if (thisVal.contains("," + Evi[i])) {
-                            newValName = thisVal.replace( "," +Evi[i] , "");
-                        } else if (thisVal.contains(Evi[i]+ ",")) {
-                            newValName = thisVal.replace( Evi[i]+",", "");
-                        } else {
-                            newValName = "" + thisVal;
+                        if (thisVal.contains(v_arr + "=") && !thisVal.contains(Evi[i])) {
+                            add = false;
+
+                        } else if (newValName.contains(Evi[j])) {
+                            if (newValName.contains("," + Evi[j] + ",")) {
+                                newValName = newValName.replace(Evi[j] + ",", "");
+                            } else if (newValName.contains("," + Evi[j])) {
+                                newValName = newValName.replace("," + Evi[j], "");
+                            } else if (newValName.contains(Evi[j] + ",")) {
+                                newValName = newValName.replace(Evi[j] + ",", "");
+                            } else {
+                                //   newValName = "" + newValName;
+                            }
+
                         }
-
                     }
-
                     if (add) {
                         newFactor.put(newValName, thisProb);
                     }

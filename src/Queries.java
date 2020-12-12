@@ -23,7 +23,7 @@ public class Queries {
         this.queryVal = Qtemp[0].substring(Qtemp[0].indexOf("=") + 1);
         this.evilist = Qtemp[1].split(",");
         UseAlgo(algo);
-        // System.out.println(Answer);
+        System.out.println(Answer);
 
 
     }
@@ -120,11 +120,8 @@ public class Queries {
                 FactorList.remove(a);
                 NormFactor(a);
                 ans = a;
-               System.out.println(a);
             }
         }
-
-
 
 
         Answer = ans.getProb(query.getName()+"="+queryVal);
