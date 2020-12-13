@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Queries {
@@ -6,7 +5,7 @@ public class Queries {
     private variable query;
     private String queryVal;
     private String[] evilist;
-    private PriorityQueue<Factor> factorQAlgo2 = new PriorityQueue<>(new Algo2Comparator());
+    private PriorityQueue<Factor> factorQ = new PriorityQueue<>(new FactorComparator());
     private graph g;
     private ArrayList<Factor> FactorList = new ArrayList<>();
     private double Answer;
@@ -39,91 +38,6 @@ public class Queries {
             Algo3();
         }
     }
-
-    private double Algo3() {
-        double gft = getFromTable();
-        if (gft != -1) {
-            Answer = gft;
-            return gft;
-        }
-        return 1;
-
-    }
-
-    private double Algo2() {
-        double gft = getFromTable();
-        if (gft != -1) {
-            Answer = gft;
-            return gft;
-        }
-
-
-        variable[] v_arr = new variable[evilist.length];
-        String[] val_arr = new String[evilist.length];
-        HashMap<String, variable> hidden = BetterRemoveFromHidden(g.copy());
-        int j = 0;
-        for (String evi : evilist) {// split to Var and Vals for evilist
-            int index = evi.indexOf("=");
-            v_arr[j] = g.getG().get(evi.substring(0, index)); //evidence variable names
-            val_arr[j] = evi.substring(index + 1); // evidence values
-            j++;
-        }
-
-        for (variable v : g.getV()) { // make factors without Ancestor
-            boolean flag = false;
-            for (int i = 0; i < evilist.length; i++) {
-                if (g.getG().get(evilist[i].substring(0, evilist[i].indexOf("="))).isAncestor(v)) {
-                    flag = true;
-                }
-            }
-
-            if (query.isAncestor(v) || Arrays.asList(v_arr).contains(v) || flag || query.equals(v)) {
-                Factor f = new Factor(v, evilist); // make factors from every variable and from evidence list
-                if (!f.getFactorName().isEmpty()) {
-                    FactorList.add(f);
-                }
-            }
-        }
-
-
-        for (String h : hidden.keySet()) {
-            getAllFactorWith(h);
-
-            while (!factorQAlgo2.isEmpty()) {
-                if (factorQAlgo2.size() > 1) {
-                    Factor a = factorQAlgo2.poll();
-                    Factor b = factorQAlgo2.poll();
-                    joinFactors(a, b);
-                } else {
-                    Factor c = factorQAlgo2.poll();
-                    Eliminate(c, h);
-                }
-            }
-        }
-        factorQAlgo2.addAll(FactorList);
-        Factor ans = new Factor();
-        while (!factorQAlgo2.isEmpty()) {
-            if (factorQAlgo2.size() > 1) {
-                Factor a = factorQAlgo2.poll();
-                Factor b = factorQAlgo2.poll();
-                FactorList.remove(a);
-                FactorList.remove(b);
-                joinFactors(a, b);
-            } else {
-                Factor a = factorQAlgo2.poll();
-                FactorList.remove(a);
-                NormFactor(a);
-                ans = a;
-            }
-        }
-
-
-        Answer = ans.getProb(query.getName() + "=" + queryVal);
-        return ans.getProb(query.getName() + "=" + queryVal);
-
-    }
-
-
     public double Algo1() {
         double gft = getFromTable();
         if (gft != -1) {
@@ -145,8 +59,6 @@ public class Queries {
             val_arr[j] = evi.substring(index + 1);
             j++;
         }
-
-
         for (int i = 0; i < query.getValues().length; i++) {
             val_arr[0] = query.getValues()[i];
             double temp = jointProb(j, hidden, v_arr, val_arr);
@@ -160,11 +72,114 @@ public class Queries {
         }
 
         Answer = ans / (norm + ans);
-//        System.out.println(Answer);
-//        System.out.println("add " + sumOfAdd);
-//        System.out.println("mul " + sumOfMul);
         return ans / (norm + ans);
     }
+
+
+
+
+    private double Algo2() {
+        double gft = getFromTable();
+        if (gft != -1) {
+            Answer = gft;
+            return gft;
+        }
+
+        variable[] v_arr = new variable[evilist.length];
+        String[] val_arr = new String[evilist.length];
+        HashMap<String, variable> hidden = BetterRemoveFromHidden(g.copy());
+        PriorityQueue<String> hiddenQ = new PriorityQueue();
+        hiddenQ.addAll(hidden.keySet());
+        splitVarVal(v_arr, val_arr);
+        makeFactors(v_arr); // make all factors from variable, add them to FactorList
+
+        while (!hiddenQ.isEmpty()) {
+            String h = hiddenQ.poll();
+            getAllFactorWith(h);
+            joinAndEliminateFactorQ(h);
+        }
+
+        factorQ.addAll(FactorList);
+        Factor ans = new Factor();
+        while (!factorQ.isEmpty()) {
+            if (factorQ.size() > 1) {
+                Factor a = factorQ.poll();
+                Factor b = factorQ.poll();
+                FactorList.remove(a);
+                FactorList.remove(b);
+                joinFactors(a, b);
+            } else {
+                Factor a = factorQ.poll();
+                FactorList.remove(a);
+                NormFactor(a);
+                ans = a;
+            }
+        }
+
+
+        Answer = ans.getProb(query.getName() + "=" + queryVal);
+        return ans.getProb(query.getName() + "=" + queryVal);
+
+    }
+
+    private double Algo3() {
+        double gft = getFromTable();
+        if (gft != -1) {
+            Answer = gft;
+            return gft;
+        }
+        return 1;
+
+    }
+
+
+
+
+
+
+
+
+    private void joinAndEliminateFactorQ(String h) {
+        while (!factorQ.isEmpty()) {
+            if (factorQ.size() > 1) {
+                Factor a = factorQ.poll();
+                Factor b = factorQ.poll();
+                joinFactors(a, b);
+            } else {
+                Factor c = factorQ.poll();
+                Eliminate(c, h);
+            }
+        }
+    }
+
+    private void makeFactors(variable[] v_arr) {
+        for (variable v : g.getV()) { // make factors without Ancestor
+            boolean flag = false;
+            for (int i = 0; i < evilist.length; i++) {
+                if (g.getG().get(evilist[i].substring(0, evilist[i].indexOf("="))).isAncestor(v)) {
+                    flag = true;
+                }
+            }
+
+            if (query.isAncestor(v) || Arrays.asList(v_arr).contains(v) || flag || query.equals(v)) {
+                Factor f = new Factor(v, evilist); // make factors from every variable and from evidence list
+                if (!f.getFactorName().isEmpty()) {
+                    FactorList.add(f);
+                }
+            }
+        }
+    }
+
+    private void splitVarVal(variable[] v_arr, String[] val_arr) {
+        int j = 0;
+        for (String evi : evilist) {// split to Var and Vals for evilist
+            int index = evi.indexOf("=");
+            v_arr[j] = g.getG().get(evi.substring(0, index)); //evidence variable names
+            val_arr[j] = evi.substring(index + 1); // evidence values
+            j++;
+        }
+    }
+
 
     private void NormFactor(Factor f) {
         Iterator<String> it = f.valIterator();
@@ -183,6 +198,7 @@ public class Queries {
         }
 
     }
+
 
     private void Eliminate(Factor f, String var) {
         Factor newFactor = new Factor();
@@ -240,7 +256,7 @@ public class Queries {
 
     }
 
-    public double jointProb(int j, HashMap<String, variable> hidden, variable[] v_arr, String[] val_arr) {
+    private double jointProb(int j, HashMap<String, variable> hidden, variable[] v_arr, String[] val_arr) {
         int i = j;
         //this method put all the hidden variable in v_var list and all its values as lists in valop list.
         List<List<String>> valop = new ArrayList<>();
@@ -275,7 +291,7 @@ public class Queries {
 
     }
 
-    public double join(variable[] var, String[] val) {
+    private double join(variable[] var, String[] val) {
         double sum = 1;
 
         HashMap<String, String> VarVal = new HashMap<>();
@@ -313,7 +329,7 @@ public class Queries {
     }
 
 
-    public double getFromTable() {
+    private double getFromTable() {
         Iterator<String> it = query.getCPT().getCpt().keySet().iterator();
         boolean flag = false;
         String evidence = "";
@@ -339,7 +355,7 @@ public class Queries {
     }
 
 
-    public HashMap<String, variable> RemoveQueryFromHidden(HashMap<String, variable> hidden) {
+    private HashMap<String, variable> RemoveQueryFromHidden(HashMap<String, variable> hidden) {
         HashMap<String, variable> temp = g.copy(); // this temp is for fixing delete from Iterator
         Iterator<String> hiddenIt = temp.keySet().iterator();
         while (hiddenIt.hasNext()) {
@@ -359,7 +375,7 @@ public class Queries {
         return hidden;
     }
 
-    public HashMap<String, variable> BetterRemoveFromHidden(HashMap<String, variable> hidden) {
+    private HashMap<String, variable> BetterRemoveFromHidden(HashMap<String, variable> hidden) {
         HashMap<String, variable> temp = g.copy(); // this temp is for fixing delete from Iterator
         Iterator<String> hiddenIt = temp.keySet().iterator();
         while (hiddenIt.hasNext()) {
@@ -427,7 +443,7 @@ public class Queries {
 
         }
 
-        factorQAlgo2.add(F3);
+        factorQ.add(F3);
     }
 
     private ArrayList<String> mergeFactorName(Factor F1, Factor F2) {
@@ -446,7 +462,7 @@ public class Queries {
         ArrayList<Factor> temp = new ArrayList<>();
         for (Factor f : FactorList) {
             if (f.getFactorName().contains(name)) {
-                factorQAlgo2.add(f);
+                factorQ.add(f);
             } else {
                 temp.add(f);
             }
@@ -455,7 +471,6 @@ public class Queries {
     }
 
 
-    /////////////change this method***********************************
     private void generatePermutations(List<List<String>> lists, List<String> result, int depth, String current) {
         if (depth == lists.size()) {
             result.add(current);
