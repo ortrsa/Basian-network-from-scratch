@@ -60,7 +60,7 @@ public class Queries {
 
         variable[] v_arr = new variable[evilist.length];
         String[] val_arr = new String[evilist.length];
-        HashMap<String, variable> hidden = BetterRemoveFromHidden(g.copy());//////    need to delete ancecer from factors
+        HashMap<String, variable> hidden = BetterRemoveFromHidden(g.copy());
         int j = 0;
         for (String evi : evilist) {// split to Var and Vals for evilist
             int index = evi.indexOf("=");
@@ -69,7 +69,7 @@ public class Queries {
             j++;
         }
 
-        for (variable v : g.getV()) { // make factors without !isAncestor
+        for (variable v : g.getV()) { // make factors without Ancestor
             boolean flag = false;
             for (int i = 0; i < evilist.length; i++) {
                 if (g.getG().get(evilist[i].substring(0, evilist[i].indexOf("="))).isAncestor(v)) {
@@ -374,7 +374,6 @@ public class Queries {
                     }
                 }
 
-                //hidden.remove(hiddenVar);
             } else {
                 for (String evi : evilist) {
                     if (hiddenVar.equals(evi.substring(0, evi.indexOf("=")))) {

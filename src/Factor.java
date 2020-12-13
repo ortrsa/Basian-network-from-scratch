@@ -132,6 +132,9 @@ public class Factor {
         return factor.get(val);
     }
 
+    public int size() {
+        return factor.size();
+    }
     public void addLine(String str, double prob) {
         factor.put(str, prob);
 
