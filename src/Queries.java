@@ -27,7 +27,6 @@ public class Queries {
         DecimalFormat dec = new DecimalFormat("#.#####");
         Answer = Double.parseDouble(dec.format(Answer));
         finalAns = Answer+","+sumOfAdd+","+sumOfMul;
-        //System.out.println(Answer+","+sumOfAdd+","+sumOfMul);
 
 
 
