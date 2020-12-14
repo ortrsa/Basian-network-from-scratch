@@ -7,7 +7,7 @@ import java.util.List;
 
 public class CPT {
     private HashMap<String, HashMap<String, Double>> Cpt;
-//    private List<String> V;
+
 
 
     public CPT(String ParV, String val, double prob) {

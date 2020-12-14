@@ -128,7 +128,42 @@ public class Queries {
             Answer = gft;
             return gft;
         }
-        return 1;
+
+        variable[] v_arr = new variable[evilist.length];
+        String[] val_arr = new String[evilist.length];
+
+        HashMap<String, variable> hidden = BetterRemoveFromHidden(g.copy());
+        splitVarVal(v_arr, val_arr);
+        makeFactors(v_arr); // make all factors from variable, add them to FactorList
+        PriorityQueue<String> hiddenQ = new PriorityQueue(new Algo3Comparator(FactorList) );
+        hiddenQ.addAll(hidden.keySet());
+
+        while (!hiddenQ.isEmpty()) {
+            String h = hiddenQ.poll();
+            getAllFactorWith(h);
+            joinAndEliminateFactorQ(h);
+        }
+
+        factorQ.addAll(FactorList);
+        Factor ans = new Factor();
+        while (!factorQ.isEmpty()) {
+            if (factorQ.size() > 1) {
+                Factor a = factorQ.poll();
+                Factor b = factorQ.poll();
+                FactorList.remove(a);
+                FactorList.remove(b);
+                joinFactors(a, b);
+            } else {
+                Factor a = factorQ.poll();
+                FactorList.remove(a);
+                NormFactor(a);
+                ans = a;
+            }
+        }
+
+
+        Answer = ans.getProb(query.getName() + "=" + queryVal);
+        return ans.getProb(query.getName() + "=" + queryVal);
 
     }
 
