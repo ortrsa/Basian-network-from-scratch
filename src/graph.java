@@ -1,6 +1,5 @@
 import javax.naming.LimitExceededException;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -11,7 +10,7 @@ public class graph {
 
     public graph(String File) {
         g = new HashMap<>();
-
+        ArrayList<String> FileFromText = new ArrayList<>();
         Iterator Line = FileToStringArr(File).iterator();
 
         if (!Line.next().toString().equals("Network")) {
@@ -19,7 +18,7 @@ public class graph {
         }
         String[] V = Line.next().toString().substring(11).split(",");
         for (int i = 0; i < V.length; i++) {
-//          System.out.println(V[i]); // print var (2 line)
+
             g.put(V[i], new variable(V[i]));
         }
         Line.next();
@@ -57,7 +56,6 @@ public class graph {
                     String[] tempCPTList = CptString.split(",");
 
                     for (int i = 0; i < tempCPTList.length-1; i++) {
-                        //System.out.println(Arrays.toString(tempCPTList));
                         while (!tempCPTList[i].contains("=")) {
                             sum += var.getParents()[i].getName()+ "="+tempCPTList[i] ;
                             if(!tempCPTList[i+1].contains("=")){sum += ",";}
@@ -72,29 +70,42 @@ public class graph {
                         }
                     }
 
-
-
                     CptString = Line.next().toString();
 
                 }
-
                 var.addLastProb();
-               // System.out.println(g);
-
             }
 
             if (tempLine.equals("Queries")) {
-                //System.out.println(g.get("C").hasParents());
-
-
                while (Line.hasNext()){
                    String QuerTemp = Line.next().toString().substring(2);
                    Queries q = new Queries(QuerTemp, this);
-                    //System.out.println(q.getFromTable());
+                    System.out.println(q.getans());
+                    FileFromText.add(q.getans());
                }
             }
-
         }
+        StringArrToFilae(FileFromText);
+    }
+
+    private void StringArrToFilae(ArrayList<String> FileFromText) {
+
+
+                try {
+                    //Whatever the file path is.
+                    File statText = new File("output.txt");
+                    FileOutputStream is = new FileOutputStream(statText);
+                    OutputStreamWriter osw = new OutputStreamWriter(is);
+                    Writer w = new BufferedWriter(osw);
+                    for (String s:FileFromText) {
+                        w.write(s+"\n");
+                    }
+                    w.close();
+                } catch (IOException e) {
+                    System.err.println("Problem writing to the file statsTest.txt");
+                }
+
+
 
     }
 

@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Queries {
@@ -11,6 +12,7 @@ public class Queries {
     private double Answer;
     private int sumOfAdd = 0;
     private int sumOfMul = 0;
+    private  String finalAns;
 
     public Queries(String Quer, graph g) {
         this.g = g;
@@ -22,9 +24,11 @@ public class Queries {
         this.queryVal = Qtemp[0].substring(Qtemp[0].indexOf("=") + 1);
         this.evilist = Qtemp[1].split(",");
         UseAlgo(algo);
-        System.out.print(Answer);
-        System.out.print("  add = " + sumOfAdd);
-        System.out.println("  mult= " + sumOfMul);
+        DecimalFormat dec = new DecimalFormat("#.#####");
+        Answer = Double.parseDouble(dec.format(Answer));
+        finalAns = Answer+","+sumOfAdd+","+sumOfMul;
+        //System.out.println(Answer+","+sumOfAdd+","+sumOfMul);
+
 
 
     }
@@ -517,5 +521,8 @@ public class Queries {
         }
     }
 
+    public String getans(){
+        return finalAns;
+    }
 
 }
