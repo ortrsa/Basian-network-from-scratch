@@ -24,9 +24,8 @@ public class Queries {
         this.queryVal = Qtemp[0].substring(Qtemp[0].indexOf("=") + 1);
         this.evilist = Qtemp[1].split(",");
         UseAlgo(algo);
-        DecimalFormat dec = new DecimalFormat("#.#####");
-        Answer = Double.parseDouble(dec.format(Answer));
-        finalAns = Answer+","+sumOfAdd+","+sumOfMul;
+        String formatAns = String.format("%.5f",Answer);
+        finalAns = formatAns+","+sumOfAdd+","+sumOfMul;
 
 
 
