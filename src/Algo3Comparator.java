@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 
+/**
+ * this class use to compare hidden values by the size of factors that contain this values.
+ */
 public class Algo3Comparator implements Comparator<String> {
     ArrayList<Factor> factors;
 

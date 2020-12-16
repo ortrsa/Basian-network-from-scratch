@@ -1,5 +1,8 @@
 import java.util.*;
 
+/**
+ * this class represent variable and contain some function the can be operate on this variable.
+ */
 public class variable {
 
 
@@ -15,44 +18,11 @@ public class variable {
 
     }
 
-    public String getName() {
-        return Name;
-    }
-
-    public variable[] getParents() {
-        return this.Parents;
-    }
-
-    public void setName(String name) {
-        Name = name;
-    }
-
-    public void setVal(String[] Values) {
-
-        this.Values = Values;
-    }
-
-    public String[] getValues() {
-        return Values;
-    }
-
-    public void NewParList(String[] Parents) {
-
-        this.Parents = new variable[Parents.length];
-    }
-
-    public void setParents(variable par, int i) {
-
-        this.Parents[i] = par;
-
-    }
-
-    public HashSet<variable> getAncestor() {
-        return ancestor;
-    }
-
-    public boolean isAncestor(variable v){
-        if(ancestor==null){MakeAncestor();}
+// public functions
+    public boolean isAncestor(variable v) {
+        if (ancestor == null) {
+            MakeAncestor();
+        }
         return ancestor.contains(v);
     }
 
@@ -61,20 +31,6 @@ public class variable {
         else return false;
     }
 
-    public void setCPT(String parList, String Cpt, String CptV) {
-
-        double dCptV = Double.parseDouble(CptV);
-        if (CPT == null) {
-            CPT = new CPT(parList, Cpt, dCptV);
-        } else {
-
-            CPT.add(parList, Cpt, dCptV);
-        }
-    }
-
-    public CPT getCPT() {
-        return this.CPT;
-    }
 
     public void addLastProb() {
         String lastVal = Values[Values.length - 1];
@@ -98,6 +54,54 @@ public class variable {
             }
         }
     }
+
+    public void NewParList(String[] Parents) {
+
+        this.Parents = new variable[Parents.length];
+    }
+
+
+///getters and setters
+
+    public String getName() {
+        return Name;
+    }
+
+    public variable[] getParents() {
+        return this.Parents;
+    }
+
+    public void setParents(variable par, int i) {
+
+        this.Parents[i] = par;
+
+    }
+
+    public CPT getCPT() {
+        return this.CPT;
+    }
+
+    public void setCPT(String parList, String Cpt, String CptV) {
+
+        double dCptV = Double.parseDouble(CptV);
+        if (CPT == null) {
+            CPT = new CPT(parList, Cpt, dCptV);
+        } else {
+
+            CPT.add(parList, Cpt, dCptV);
+        }
+    }
+
+
+    public void setVal(String[] Values) {
+
+        this.Values = Values;
+    }
+
+    public String[] getValues() {
+        return Values;
+    }
+
 
 
     @Override

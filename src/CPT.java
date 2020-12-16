@@ -5,9 +5,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * this class represent CPT by HM inside of HM,
+ * the inner HM contain value as key and probability as value .
+ * the other HM contain the parents and this value as one string as key and inner HM as mention.
+ */
 public class CPT {
     private HashMap<String, HashMap<String, Double>> Cpt;
-
 
 
     public CPT(String ParV, String val, double prob) {
@@ -33,10 +37,8 @@ public class CPT {
         }
     }
 
-    public HashMap<String, HashMap<String, Double>> getCpt() {
-        return Cpt;
-    }
 
+    //public functions //
     public void add(String ParV, String val, double prob) {
 
         if (Cpt.get(ParV) == null) {
@@ -49,14 +51,12 @@ public class CPT {
         }
     }
 
+
     public Iterator<String> iterator(){
         return getCpt().keySet().iterator();
     }
 
-    @Override
-    public String toString() {
-        return "" + Cpt;
-    }
+
 
     public void LastProb(String lastVal) {
         Iterator<HashMap<String, Double>> ParIt = this.Cpt.values().iterator();
@@ -69,13 +69,21 @@ public class CPT {
             while (val.hasNext()) {
                 prob = prob - val.next();
             }
-//            DecimalFormat dec = new DecimalFormat("#.#####");
-//            prob = Double.parseDouble(dec.format(prob));
 
             ParString.put(lastVal, prob);
         }
 
     }
 
+    //getters//
+    public HashMap<String, HashMap<String, Double>> getCpt() {
+        return Cpt;
+    }
+
+
+    @Override
+    public String toString() {
+        return "" + Cpt;
+    }
 
 }
