@@ -1,6 +1,11 @@
 import java.text.DecimalFormat;
 import java.util.*;
 
+/**
+ * this class deal with all queries and contain all the necessary algorithm to answer
+ * all of them.
+ *
+ */
 public class Queries {
     private int algo;
     private variable query;
@@ -14,10 +19,14 @@ public class Queries {
     private int sumOfMul = 0;
     private  String finalAns;
 
+    /**
+     * analyze Queries from graph class and insert to relevant variable.
+     * @param Quer
+     * @param g
+     */
     public Queries(String Quer, graph g) {
         this.g = g;
         this.algo = Integer.parseInt(Quer.substring(Quer.length() - 1));
-
         String temp = Quer.substring(0, Quer.length() - 3);
         String[] Qtemp = temp.split("\\|");
         this.query = g.getG().get(Qtemp[0].substring(0, Qtemp[0].indexOf("=")));
@@ -27,10 +36,12 @@ public class Queries {
         String formatAns = String.format("%.5f",Answer);
         finalAns = formatAns+","+sumOfAdd+","+sumOfMul;
 
-
-
     }
 
+    /**
+     * Routing algorithms.
+     * @param i
+     */
     public void UseAlgo(int i) {
         if (i == 1) {
             Algo1();
@@ -40,11 +51,22 @@ public class Queries {
             Algo3();
         }
     }
-    public double Algo1() {
+
+    /**
+     * simple calculation of Joint Probability,
+     *  - if the ans is on table bring ans from table.
+     *  1- enter query and evidence to the same arrays (one for variable and one for values).
+     *  2- get all hidden variable.
+     *  3- send all query, evidence and hidden to jointProb function.
+     *  4- jointProb make all Permutations of hidden variables values and mult with query and evidence.
+     *  5- normalize ans from jointProb.
+     *
+     *
+     */
+    public void Algo1() {
         double gft = getFromTable();
         if (gft != -1) {
             Answer = gft;
-            return gft;
         }
         HashMap<String, variable> hidden = RemoveQueryFromHidden(g.copy());
         variable[] v_arr = new variable[evilist.length + 1 + hidden.size()];
@@ -70,21 +92,28 @@ public class Queries {
                 norm += temp;
                 sumOfAdd++;
             }
-
         }
-
         Answer = ans / (norm + ans);
-        return ans / (norm + ans);
     }
 
 
+    /**
+     * variable elimination.
+     * - if the ans is on table bring ans from table.
+     * 1- BetterRemoveFromHidden create hidden list and delete every variable that is not relevant (not ancestor).
+     * 2- add all hidden to PriorityQueue order by 'A,B,C'.
+     * 3- make all factors from variable, add them to FactorList
+     * 4- pull hidden from queue take all factor with this variable.
+     * 5- join all is factor and when there is only one factor with this variable eliminate.
+     * 6- after no more factor with hidden variable join all rest factor ,eliminate and normalize.
+     *
+     */
 
-
-    private double Algo2() {
+    private void Algo2() {
         double gft = getFromTable();
         if (gft != -1) {
             Answer = gft;
-            return gft;
+
         }
 
         variable[] v_arr = new variable[evilist.length];
@@ -101,6 +130,7 @@ public class Queries {
             joinAndEliminateFactorQ(h);
         }
 
+        //no more hidden
         factorQ.addAll(FactorList);
         Factor ans = new Factor();
         while (!factorQ.isEmpty()) {
@@ -120,15 +150,22 @@ public class Queries {
 
 
         Answer = ans.getProb(query.getName() + "=" + queryVal);
-        return ans.getProb(query.getName() + "=" + queryVal);
 
     }
 
-    private double Algo3() {
+    /**
+     * same as Algo2 the main different is in PriorityQueue,
+     * this algorithm will chose hidden by the sum of the factor size that contain them
+     * and eliminate the smallest first.
+     *
+     * @return
+     */
+
+    private void Algo3() {
         double gft = getFromTable();
         if (gft != -1) {
             Answer = gft;
-            return gft;
+
         }
 
         variable[] v_arr = new variable[evilist.length];
@@ -165,15 +202,13 @@ public class Queries {
 
 
         Answer = ans.getProb(query.getName() + "=" + queryVal);
-        return ans.getProb(query.getName() + "=" + queryVal);
+
 
     }
 
 
 
-
-
-
+//////privat functions //////////
 
 
     private void joinAndEliminateFactorQ(String h) {
@@ -232,6 +267,7 @@ public class Queries {
         while (it2.hasNext()) {
             String thisVal = it2.next();
             f.addLine(thisVal, (f.getProb(thisVal) / sum));
+
         }
 
     }
@@ -306,7 +342,7 @@ public class Queries {
             j++;
         }
         List<String> re = new LinkedList<>();
-        generatePermutations(valop, re, 0, "");
+        Permutations(valop, re, 0, "");
         double ans = 0.0;
         for (int t = 0; t < re.size(); t++) {
             for (int k = i; k < val_arr.length; k++) {
@@ -341,7 +377,6 @@ public class Queries {
         for (int i = 0; i < var.length; i++) {
             String Ssum = "";
             if (!var[i].hasParents()) {
-
 
                 sum *= var[i].getCPT().getCpt().get("").get(val[i]);
                 if (flag) {
@@ -508,17 +543,19 @@ public class Queries {
     }
 
 
-    private void generatePermutations(List<List<String>> lists, List<String> result, int depth, String current) {
+    private void Permutations(List<List<String>> lists, List<String> result, int depth, String current) {
         if (depth == lists.size()) {
             result.add(current);
             return;
         }
 
         for (int i = 0; i < lists.get(depth).size(); i++) {
-            generatePermutations(lists, result, depth + 1, current + "," + lists.get(depth).get(i));
+            Permutations(lists, result, depth + 1, current + "," + lists.get(depth).get(i));
         }
     }
 
+
+    /// getters ///
     public String getans(){
         return finalAns;
     }

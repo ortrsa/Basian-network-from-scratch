@@ -4,6 +4,14 @@ import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.Pattern;
 
+/**
+ * 
+ * this class represent the network itself (contain HM with all the variable ),
+ * read from input file and insert all the data to the relevant class.
+ * at the end of all calculation Writer to the result to "output.txt".
+ * 
+ *
+ */
 public class graph {
 
     private HashMap<String, variable> g;
@@ -16,6 +24,7 @@ public class graph {
         if (!Line.next().toString().equals("Network")) {
             throw new IllegalArgumentException("Not a formatted file ");
         }
+        //make all variable.
         String[] V = Line.next().toString().substring(11).split(",");
         for (int i = 0; i < V.length; i++) {
 
@@ -27,7 +36,7 @@ public class graph {
             String tempLine = Line.next().toString();
 
             if (tempLine.contains("Var")) {
-
+                //update variable parents list.
                 variable var = g.get(tempLine.substring(4));
                 var.setVal(Line.next().toString().substring(8).split(","));
 
@@ -49,7 +58,7 @@ public class graph {
                 if (!Line.next().equals("CPT:")) {
                     throw new IllegalArgumentException();
                 }
-
+                //make all CPT's.
                 String CptString = Line.next().toString();
                 while (!CptString.isEmpty()) {
                     String sum = "";
@@ -61,8 +70,6 @@ public class graph {
                             if(!tempCPTList[i+1].contains("=")){sum += ",";}
                             i++;
                         }
-
-
                         while (tempCPTList[i].contains("=")){
                             var.setCPT(sum, tempCPTList[i].substring(1), tempCPTList[i + 1]);
                             i++;
@@ -75,24 +82,29 @@ public class graph {
                 }
                 var.addLastProb();
             }
-
+            // send to Queries and print answer.
             if (tempLine.equals("Queries")) {
                while (Line.hasNext()){
-                   String QuerTemp = Line.next().toString().substring(2);
+                   String QuerTemp = Line.next().toString();
+                   if(QuerTemp.length()<1)break;
+                   QuerTemp = QuerTemp.toString().substring(2);
                    Queries q = new Queries(QuerTemp, this);
                     System.out.println(q.getans()); //// delete
                     FileFromText.add(q.getans());
                }
             }
         }
-        StringArrToFilae(FileFromText);
+        StringArrToFile(FileFromText);
     }
 
-    private void StringArrToFilae(ArrayList<String> FileFromText) {
+    /**
+     * Writer result from String array to file.
+     * @param FileFromText
+     */
+    private void StringArrToFile(ArrayList<String> FileFromText) {
 
 
                 try {
-                    //Whatever the file path is.
                     File statText = new File("output.txt");
                     FileOutputStream is = new FileOutputStream(statText);
                     OutputStreamWriter osw = new OutputStreamWriter(is);
@@ -105,10 +117,13 @@ public class graph {
                     System.err.println("Problem writing to the file statsTest.txt");
                 }
 
-
-
     }
 
+    /**
+     * Read from file to String array.
+     * @param File
+     * @return
+     */
 
     private ArrayList<String> FileToStringArr(String File) {
         ArrayList<String> TextFromFile = new ArrayList<String>();
@@ -128,6 +143,12 @@ public class graph {
         }
         return TextFromFile;
     }
+
+    /**
+     * create deep copy of this network.
+     *
+     * @return
+     */
     public HashMap<String, variable> copy() {
         HashMap<String, variable> copy = new HashMap<>();
         Iterator<String> it = g.keySet().iterator();
@@ -138,6 +159,7 @@ public class graph {
         }
         return copy;
     }
+
 
     public HashMap<String, variable> getG() {
         return g;

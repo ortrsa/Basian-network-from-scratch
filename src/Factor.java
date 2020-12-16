@@ -1,6 +1,10 @@
 import java.lang.reflect.Array;
 import java.util.*;
 
+/**
+ * this class represent a Factor, by Array List as all variable name that in this factor,
+ * and HM that contain variable and values combine as one String for Key and the probability as value.
+ */
 public class Factor {
     private ArrayList<String> factorName;
     private HashMap<String, Double> factor;
@@ -19,6 +23,8 @@ public class Factor {
 
     }
 
+
+    // private function
     private void RemoveEvidenceFromFactor(String[] Evi) {
         HashMap<String, Double> newFactor = new HashMap<>();
         String newValName = "";
@@ -67,7 +73,7 @@ public class Factor {
 
     }
 
-
+    // public function
     public void CPTtoFactor(variable v, CPT cpt) {
 
         String strAdd = v.getName();
@@ -100,10 +106,6 @@ public class Factor {
 
     }
 
-    public boolean hasOneVal() {
-        return factor.size() <= 1;
-    }
-
     public int getAsciiVal() {
         int sum = 0;
         for (String name : factorName) {
@@ -120,6 +122,19 @@ public class Factor {
         return factor.keySet().iterator();
     }
 
+
+    public void addLine(String str, double prob) {
+        factor.put(str, prob);
+
+    }
+
+    public int size() {
+        return factor.size();
+    }
+
+
+
+    ///getters and setters
     public ArrayList<String> getFactorName() {
         return factorName;
     }
@@ -132,13 +147,8 @@ public class Factor {
         return factor.get(val);
     }
 
-    public int size() {
-        return factor.size();
-    }
-    public void addLine(String str, double prob) {
-        factor.put(str, prob);
 
-    }
+
 
     @Override
     public String toString() {
