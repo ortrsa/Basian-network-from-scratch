@@ -66,7 +66,7 @@ public class graph {
 
                     for (int i = 0; i < tempCPTList.length-1; i++) {
                         while (!tempCPTList[i].contains("=")) {
-                            sum += var.getParents()[i].getName()+ "="+tempCPTList[i] ; ////stringg
+                            sum += var.getParents()[i].getName()+ "="+tempCPTList[i] ;
                             if(!tempCPTList[i+1].contains("=")){sum += ",";}
                             i++;
                         }
@@ -89,7 +89,6 @@ public class graph {
                    if(QuerTemp.length()<1)break;
                    QuerTemp = QuerTemp.toString().substring(2);
                    Queries q = new Queries(QuerTemp, this);
-                    System.out.println(q.getans()); //// delete
                     FileFromText.add(q.getans());
                }
             }
@@ -114,7 +113,7 @@ public class graph {
                     }
                     w.close();
                 } catch (IOException e) {
-                    System.err.println("Problem writing to the file statsTest.txt");
+                    System.err.println("Problem writing to the file output.txt");
                 }
 
     }

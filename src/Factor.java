@@ -47,7 +47,7 @@ public class Factor {
             newValName = thisVal;
             for (int i = 0; i < Evi.length; i++) {
                 int index = Evi[i].indexOf("=");
-                String v_arr = Evi[i].substring(0, index); //evi name
+                String v_arr = Evi[i].substring(0, index);
                 if (!thisVal.contains(v_arr)) continue;
                 factorName.remove(v_arr);
 
