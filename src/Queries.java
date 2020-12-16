@@ -67,6 +67,7 @@ public class Queries {
         double gft = getFromTable();
         if (gft != -1) {
             Answer = gft;
+            return;
         }
         HashMap<String, variable> hidden = RemoveQueryFromHidden(g.copy());
         variable[] v_arr = new variable[evilist.length + 1 + hidden.size()];
@@ -94,6 +95,7 @@ public class Queries {
             }
         }
         Answer = ans / (norm + ans);
+        return;
     }
 
 
@@ -113,7 +115,7 @@ public class Queries {
         double gft = getFromTable();
         if (gft != -1) {
             Answer = gft;
-
+return;
         }
 
         variable[] v_arr = new variable[evilist.length];
@@ -150,7 +152,7 @@ public class Queries {
 
 
         Answer = ans.getProb(query.getName() + "=" + queryVal);
-
+return;
     }
 
     /**
@@ -165,7 +167,7 @@ public class Queries {
         double gft = getFromTable();
         if (gft != -1) {
             Answer = gft;
-
+return;
         }
 
         variable[] v_arr = new variable[evilist.length];
@@ -202,7 +204,7 @@ public class Queries {
 
 
         Answer = ans.getProb(query.getName() + "=" + queryVal);
-
+return;
 
     }
 
